@@ -20,6 +20,7 @@
 #include <boost/filesystem.hpp>
 #include <osgGA/MultiTouchTrackballManipulator>
 #include "Utils/CLabelControlEventHandler.h"
+#include "Utils/Parse.h"
 
 OSGViewerWidget::OSGViewerWidget(QWidget* parent) {
     setMouseTracking(true);
@@ -28,10 +29,19 @@ OSGViewerWidget::OSGViewerWidget(QWidget* parent) {
 
 OSGViewerWidget::~OSGViewerWidget() {}
 
+void OSGViewerWidget::home() {
+    osgEarth::Viewpoint vp;
+    vp.focalPoint() = ParseMetaDataFile("D:/data/viewerFlightData/AutoRes/metadata1.xml");
+    vp.setHeading(std::string("0"));
+    vp.setPitch(std::string("-45"));
+    vp.setRange(std::string("5000"));
+    m_cameraManipulator->setViewpoint(vp, 3);
+}
+
 void OSGViewerWidget::init()
 {
-    auto m_mainpulator = new osgEarth::Util::EarthManipulator;
-    getOsgViewer()->setCameraManipulator(m_mainpulator);
+    m_cameraManipulator = new osgEarth::Util::EarthManipulator;
+    getOsgViewer()->setCameraManipulator(m_cameraManipulator);
 
 
     // load an earth file, and support all or our example command-line options
@@ -67,4 +77,6 @@ void OSGViewerWidget::init()
     auto viewer = getOsgViewer();
     viewer->getCamera()->addCullCallback(new osgEarth::Util::AutoClipPlaneCullCallback(mapNode));
 
+
+    
 }

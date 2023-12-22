@@ -25,7 +25,7 @@ public:
     explicit OSGViewerWidget(QWidget* parent = nullptr);
     ~OSGViewerWidget();
     
-    
+    void home();
 public slots:
     void init();
 
