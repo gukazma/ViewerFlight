@@ -9,7 +9,7 @@ if (NOT CMAKE_BUILD_TYPE)
     message(STATUS "No CMAKE_BUILD_TYPE selected, defaulting to ${CMAKE_BUILD_TYPE}")
 endif ()
 
-project(CppTemplateProject VERSION 0.1 LANGUAGES CXX)
+project(ViewerFlight VERSION 0.1 LANGUAGES CXX)
 
 include(CMakeModules/conan.cmake)
 if (CONAN_PROFILE_BUILD AND CONAN_PROFILE_HOST)
@@ -69,7 +69,7 @@ if(ENABLE_DOCS)
   file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../Docs)
   build_docs(PROCESS_DOXYFILE TRUE DOXYFILE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/Docs/Doxyfile.in)
 endif()
-set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT DemoApp)
+set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT ViewerFlight)
 
 if(CLANG_FORMAT_EXE)
   message(STATUS "Found clang format ............ Configuring ..............")

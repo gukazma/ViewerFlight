@@ -16,25 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QPushButton" name="pushButton">
-      <property name="text">
-       <string>1+1=</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton_2">
-      <property name="text">
-       <string>2+2=</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>null</string>
-      </property>
-     </widget>
+     <widget class="OSGViewerWidget" name="osgviewer" native="true"/>
     </item>
    </layout>
   </widget>
@@ -50,6 +32,14 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>OSGViewerWidget</class>
+   <extends>QWidget</extends>
+   <header>OSGViewerWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

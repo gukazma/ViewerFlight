@@ -1,5 +1,7 @@
-# ci/cd script
+# 第一版
 
-* Update ci/cd scripts
+* 获取模型的泊松采样
 
-* Auto release binary
+* 并对于采样点进行航线等边三角形规划初始航线
+
+* 针对初始航线进行避障处理
