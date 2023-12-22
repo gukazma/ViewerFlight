@@ -19,6 +19,8 @@
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 #include <osgGA/MultiTouchTrackballManipulator>
+#include "OSG/CLabelControlEventHandler.h"
+
 OSGViewerWidget::OSGViewerWidget(QWidget* parent) {
     setMouseTracking(true);
     connect(this, &osgQOpenGLWidget::initialized, this, &OSGViewerWidget::init);
@@ -30,7 +32,7 @@ void OSGViewerWidget::init()
 {
     auto m_mainpulator = new osgEarth::Util::EarthManipulator;
     getOsgViewer()->setCameraManipulator(m_mainpulator);
-    
+
 
     // load an earth file, and support all or our example command-line options
     boost::filesystem::path binPath = boost::dll::program_location().parent_path();
@@ -53,16 +55,16 @@ void OSGViewerWidget::init()
     m_root->addChild(skyNode);
     m_root->addChild(node);
     getOsgViewer()->setSceneData(m_root);
+    osgEarth::Util::Controls::LabelControl* positionLabel =
+        new osgEarth::Util::Controls::LabelControl("", osg::Vec4(1.0, 1.0, 1.0, 1.0));
+    getOsgViewer()->addEventHandler(new CLabelControlEventHandler(mapNode, positionLabel));
+    m_root->addChild(osgEarth::Util::Controls::ControlCanvas::get(getOsgViewer()));
+    osgEarth::Util::Controls::ControlCanvas* canvas =
+        osgEarth::Util::Controls::ControlCanvas::get(getOsgViewer());
+    canvas->addControl(positionLabel);
 
     // initialize a viewer:
     auto viewer = getOsgViewer();
     viewer->getCamera()->addCullCallback(new osgEarth::Util::AutoClipPlaneCullCallback(mapNode));
 
-    osgEarth::Util::Controls::LabelControl* PositionLabel =
-        new osgEarth::Util::Controls::LabelControl("", osg::Vec4(1.0, 1.0, 1.0, 1.0));
-    
-    m_root->addChild(osgEarth::Util::Controls::ControlCanvas::get(viewer));
-    osgEarth::Util::Controls::ControlCanvas* canvas =
-        osgEarth::Util::Controls::ControlCanvas::get(viewer);
-    canvas->addControl(PositionLabel);
 }

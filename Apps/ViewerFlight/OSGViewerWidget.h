@@ -9,10 +9,13 @@ namespace osg
 class Group;
 }
 
-namespace osgGA {
-class CameraManipulator;
+namespace osgEarth
+{
+namespace Util
+{
+class EarthManipulator;
 }
-
+}
 
 class OSGViewerWidget : public osgQOpenGLWidget
 {
@@ -27,7 +30,7 @@ public slots:
 
 private:
     osg::ref_ptr<osg::Group> m_root;
-    osg::ref_ptr<osgGA::CameraManipulator> m_cameraManipulator;
+    osg::ref_ptr<osgEarth::Util::EarthManipulator> m_cameraManipulator;
 };
 
 
