@@ -3,7 +3,7 @@ import platform
 
 
 class ModuleConan(ConanFile):
-    name = "QtConanExample"
+    name = "ViewerFlight"
     description = "An example for Qt with Conan"
     settings = "os", "compiler", "build_type", "arch"
     generators = "cmake", "cmake_find_package_multi", "cmake_paths"
@@ -37,3 +37,4 @@ class ModuleConan(ConanFile):
     def imports(self):
         self.copy("*.dll", "./bin", "bin")
         self.copy("*.so", "./bin", "bin")
+        self.copy("osgPlugins-3.6.5", "./bin", "bin")

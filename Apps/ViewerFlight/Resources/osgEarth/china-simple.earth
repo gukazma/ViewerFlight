@@ -1,0 +1,7 @@
+<map name="Globe" type="geocentric" version="2">
+
+	<image name="GlobeImage" driver="gdal">
+		<url>./globe.tif</url>
+	</image>
+	
+</map>
