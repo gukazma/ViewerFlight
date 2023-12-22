@@ -19,7 +19,7 @@
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 #include <osgGA/MultiTouchTrackballManipulator>
-#include "OSG/CLabelControlEventHandler.h"
+#include "Utils/CLabelControlEventHandler.h"
 
 OSGViewerWidget::OSGViewerWidget(QWidget* parent) {
     setMouseTracking(true);

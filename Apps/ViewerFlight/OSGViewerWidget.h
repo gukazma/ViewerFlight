@@ -24,7 +24,8 @@ class OSGViewerWidget : public osgQOpenGLWidget
 public:
     explicit OSGViewerWidget(QWidget* parent = nullptr);
     ~OSGViewerWidget();
-
+    
+    
 public slots:
     void init();
 
