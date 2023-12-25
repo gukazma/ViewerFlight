@@ -35,7 +35,8 @@ void OSGViewerWidget::home() {
     vp.setHeading(std::string("0"));
     vp.setPitch(std::string("-45"));
     vp.setRange(std::string("5000"));
-    m_cameraManipulator->setViewpoint(vp, 3);
+    m_cameraManipulator->setViewpoint(
+        osgEarth::Viewpoint("bali", 2.2944, 48.8586, 500, 0, -90, 1000), 4);
 }
 
 void OSGViewerWidget::init()
@@ -53,18 +54,19 @@ void OSGViewerWidget::init()
     auto map        = mapNode->getMap();
 
     osgEarth::SkyOptions skyOptions;   // 天空环境选项
-    skyOptions.ambient() = 1;          // 环境光照水平(0~1)
+    skyOptions.ambient() = 0.1;          // 环境光照水平(0~1)
     auto skyNode =
         osgEarth::SkyNode::create(skyOptions);   // 创建用于提供天空、照明和其他环境效果的类
     skyNode->setDateTime(
-        osgEarth::DateTime(2021, 4, 15, 12 - 8));   // 配置环境的日期/时间。(格林尼治，时差8小时)
+        osgEarth::DateTime(2021, 4, 15, 0));   // 配置环境的日期/时间。(格林尼治，时差8小时)
     skyNode->setEphemeris(new osgEarth::Util::Ephemeris);   // 用于根据日期/时间定位太阳和月亮的星历
     skyNode->setLighting(true);                             // 天空是否照亮了它的子图
     skyNode->addChild(mapNode);                             // 添加地图节点
     skyNode->attach(getOsgViewer());   // 将此天空节点附着到视图（放置天光）
     m_root->addChild(skyNode);
-    m_root->addChild(node);
-    getOsgViewer()->setSceneData(m_root);
+    getOsgViewer()->realize();
+    //m_root->addChild(node);
+    getOsgViewer()->setSceneData(skyNode);
     osgEarth::Util::Controls::LabelControl* positionLabel =
         new osgEarth::Util::Controls::LabelControl("", osg::Vec4(1.0, 1.0, 1.0, 1.0));
     getOsgViewer()->addEventHandler(new CLabelControlEventHandler(mapNode, positionLabel));
