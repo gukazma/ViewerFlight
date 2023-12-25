@@ -13,9 +13,10 @@ CLabelControlEventHandler::CLabelControlEventHandler(osgEarth::MapNode* mapNode,
     if (label) {
         label->setFont(osgText::readFontFile("simhei.ttf"));
         label->setEncoding(osgText::String::ENCODING_UTF8);
-        label->setHaloColor(osg::Vec4(1.0, 0.5, 0.0, 1));
+        label->setHaloColor(osg::Vec4(0.5, 0.2, 0.0, 1));
         label->setHorizAlign(osgEarth::Util::Controls::Control::ALIGN_RIGHT);
         label->setVertAlign(osgEarth::Util::Controls::Control::ALIGN_BOTTOM);
+        label->setBackColor({0.0, 0.0, 0.0, 1.0});
 
         addCallback(new MouseCoordsLabelCallback(label, formatter));
     }

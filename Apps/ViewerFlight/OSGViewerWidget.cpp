@@ -24,6 +24,7 @@
 
 OSGViewerWidget::OSGViewerWidget(QWidget* parent) {
     setMouseTracking(true);
+    setFocusPolicy(Qt::StrongFocus);
     connect(this, &osgQOpenGLWidget::initialized, this, &OSGViewerWidget::init);
 }
 
@@ -44,7 +45,7 @@ void OSGViewerWidget::init()
     m_cameraManipulator = new osgEarth::Util::EarthManipulator;
     getOsgViewer()->setCameraManipulator(m_cameraManipulator);
 
-
+    
     // load an earth file, and support all or our example command-line options
     boost::filesystem::path binPath = boost::dll::program_location().parent_path();
     auto                    resourcesPath = binPath / "osgEarth/china-simple.earth";
@@ -52,6 +53,7 @@ void OSGViewerWidget::init()
     m_root     = new osg::Group();
     auto mapNode    = osgEarth::MapNode::findMapNode(node);
     auto map        = mapNode->getMap();
+
 
     osgEarth::SkyOptions skyOptions;   // 天空环境选项
     skyOptions.ambient() = 0.1;          // 环境光照水平(0~1)

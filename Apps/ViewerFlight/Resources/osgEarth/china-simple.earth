@@ -1,20 +1,17 @@
-<map name="Globe" type="geocentric" version="2">
+<map name="Globe">
 
-	<!-- 注：使用如下指令生成缓存文件:"osgearth_cache --seed xxx.earth --max-level 4" -->
-
-	<!-- 全球影像图 -->
-	<image name="GlobeImage" driver="gdal">
-		<url>./globe.tif</url>
-	</image>
-	<elevation name="GlobeHeightfiled" driver="gdal">
+	<GDALImage name="world-tiff">
+        <url>./globe.tif</url>
+    </GDALImage>
+	<GDALElevation name="GlobeHeightfiled">
 		<url>./srtm30.tif</url>
-	</elevation>
-	<!-- 地图更新(必须加,尚不清楚后续能否使用该地址。当前2022.04.09) -->
-	<image name="mapbox_satellite" driver="xyz">
+	</GDALElevation>
+	
+	<XYZImage name="mapbox_satellite">
 		<url>http://47.241.95.200/googlemap/vt/lyrs=s&amp;x={x}&amp;y={y}&amp;z={z}</url>
 		<profile>spherical-mercator</profile>
 		<cache_policy usage="read_write"/>
-	</image>
+	</XYZImage>
 	
 	<!-- 文件缓存 -->
 	<options elevation_tile_size="15" overlay_resolution_ratio="1">
