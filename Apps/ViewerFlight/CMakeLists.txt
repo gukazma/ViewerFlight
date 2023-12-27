@@ -9,9 +9,6 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(osgearth)
-find_package(LibKML REQUIRED)
-find_package(Boost REQUIRED)
 
 # 扫描当前源代码文件列表
 
@@ -36,12 +33,6 @@ Qt5::Core
 Qt5::Gui
 Qt5::Widgets
 Qt5::OpenGL
-Boost::system
-Boost::filesystem
-Boost::dynamic_linking
-Boost::thread
-CONAN_PKG::osgearth
-kmlbase kmlconvenience kmldom kmlengine
 uavmvs::uavmvs
 )
 target_include_directories(${TARGET_NAME} PRIVATE

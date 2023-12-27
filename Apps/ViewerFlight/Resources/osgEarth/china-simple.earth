@@ -3,9 +3,6 @@
 	<GDALImage name="world-tiff">
         <url>./globe.tif</url>
     </GDALImage>
-	<GDALElevation name="GlobeHeightfiled">
-		<url>./srtm30.tif</url>
-	</GDALElevation>
 	
 	<XYZImage name="mapbox_satellite">
 		<url>http://47.241.95.200/googlemap/vt/lyrs=s&amp;x={x}&amp;y={y}&amp;z={z}</url>

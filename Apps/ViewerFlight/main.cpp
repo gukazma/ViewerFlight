@@ -1,10 +1,9 @@
 #include "MainWindow.h"
 #include <QApplication>
-#include <osgEarth/Common>
-#include "Utils/Parse.h"
+#include <UAVMVS/Context.hpp>
 int main(int argc, char** argv)
 {
-    osgEarth::initialize();
+    uavmvs::context::Init();
     QApplication app(argc, argv);
 
     MainWindow mainwinndow;

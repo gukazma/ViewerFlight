@@ -3,6 +3,10 @@ set(TARGET_NAME "uavmvs")
 file(GLOB_RECURSE HEADER_FILES "*.h")
 file(GLOB_RECURSE HPP_FILES "*.hpp")
 file(GLOB_RECURSE CPP_FILES "*.cpp")
+find_package(osgearth)
+find_package(LibKML REQUIRED)
+find_package(Boost REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Gui OpenGL CONFIG REQUIRED)
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${HPP_FILES} ${CPP_FILES})
 
@@ -19,12 +23,19 @@ target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:
 # Link dependencies    
 target_link_libraries(${TARGET_NAME} 
     PUBLIC
+Qt5::Core
+Boost::system
+Boost::filesystem
+Boost::dynamic_linking
+Boost::thread
+CONAN_PKG::osgearth
+kmlbase kmlconvenience kmldom kmlengine
           )
 
 target_include_directories(
   ${TARGET_NAME} 
   PUBLIC 
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Include>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
 )
 
 set_target_properties(${TARGET_NAME}

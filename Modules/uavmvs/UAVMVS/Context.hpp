@@ -1,9 +1,10 @@
 #pragma once
-
+#include <osgViewer/Viewer>
 namespace uavmvs
 {
 namespace context
 {
-void init();
+void Init();
+void Attach(osg::ref_ptr<osgViewer::Viewer> viewer_);
 }
 }
