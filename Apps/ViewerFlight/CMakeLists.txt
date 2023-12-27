@@ -42,6 +42,7 @@ Boost::dynamic_linking
 Boost::thread
 CONAN_PKG::osgearth
 kmlbase kmlconvenience kmldom kmlengine
+uavmvs::uavmvs
 )
 target_include_directories(${TARGET_NAME} PRIVATE
 ${CMAKE_CURRENT_LIST_DIR}/Vendors/osgQt

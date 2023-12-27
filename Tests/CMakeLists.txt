@@ -24,7 +24,6 @@ set_target_properties(${TARGET_NAME} PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "$
 
 target_link_libraries(${TARGET_NAME} 
       PRIVATE
-            ${PROJECT_NAME}::Primitives
             CONAN_PKG::gtest
 )
 
