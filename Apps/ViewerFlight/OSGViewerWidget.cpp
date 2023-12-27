@@ -32,7 +32,7 @@ OSGViewerWidget::~OSGViewerWidget() {
 }
 
 void OSGViewerWidget::home() {
-    
+    uavmvs::context::View(osgEarth::Viewpoint("bali", 2.2944, 48.8586, 500, 0, -90, 1000), 4);
 }
 
 void OSGViewerWidget::init()
