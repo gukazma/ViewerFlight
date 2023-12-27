@@ -27,11 +27,12 @@ OSGViewerWidget::OSGViewerWidget(QWidget* parent) {
     connect(this, &osgQOpenGLWidget::initialized, this, &OSGViewerWidget::init);
 }
 
-OSGViewerWidget::~OSGViewerWidget() {}
+OSGViewerWidget::~OSGViewerWidget() {
+    uavmvs::context::Destory();
+}
 
 void OSGViewerWidget::home() {
-    m_cameraManipulator->setViewpoint(
-        osgEarth::Viewpoint("bali", 2.2944, 48.8586, 500, 0, -90, 1000), 4);
+    
 }
 
 void OSGViewerWidget::init()

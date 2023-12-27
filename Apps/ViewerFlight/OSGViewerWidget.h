@@ -30,8 +30,7 @@ public slots:
     void init();
 
 private:
-    osg::ref_ptr<osg::Group> m_root;
-    osg::ref_ptr<osgEarth::Util::EarthManipulator> m_cameraManipulator;
+
 };
 
 

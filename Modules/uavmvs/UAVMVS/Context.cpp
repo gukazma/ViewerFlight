@@ -23,9 +23,9 @@
 #include "Utils/CLabelControlEventHandler.h"
 #include "Utils/Parse.h"
 
-static osg::ref_ptr<osgViewer::Viewer> _viewer;
-static osg::ref_ptr<osg::Group>                       _root;
-static osg::ref_ptr<osgEarth::Util::EarthManipulator> _cameraManipulator;
+osg::ref_ptr<osgViewer::Viewer> _viewer;
+osg::ref_ptr<osg::Group>                       _root;
+osg::ref_ptr<osgEarth::Util::EarthManipulator> _cameraManipulator;
 
 namespace uavmvs {
 namespace context {
@@ -74,6 +74,11 @@ void Attach(osg::ref_ptr<osgViewer::Viewer> viewer_)
 
     // initialize a viewer:
     _viewer->getCamera()->addCullCallback(new osgEarth::Util::AutoClipPlaneCullCallback(mapNode));
+}
+void Destory() {
+    _root.release();
+    _cameraManipulator.release();
+    _viewer.release();
 }
 }   // namespace context
 }   // namespace uavmvs
