@@ -2,6 +2,7 @@
 #include "ui_MainWindow.h"
 #include <QLineEdit>
 #include <QRegExpValidator>
+#include <QFileDialog>
 #include <QPushButton>
 #include <QLabel>
 #include <UAVMVS/Context.hpp>
@@ -55,6 +56,13 @@ MainWindow::MainWindow(QWidget *parent) :
         float longitue = lineEdit_Longitude->text().toFloat();
         float latitude = lineEdit_Latitude->text().toFloat();
         uavmvs::context::View(osgEarth::Viewpoint("", longitue, latitude, 5000, 0, -90, 1000), 5);
+    });
+
+    connect(addLayerButton, &QPushButton::clicked, [=]() {
+        auto layerDir = QFileDialog::getExistingDirectory(nullptr, tr("Open layer dir"));
+        if (!layerDir.isEmpty()) {
+
+        }
     });
 }
 

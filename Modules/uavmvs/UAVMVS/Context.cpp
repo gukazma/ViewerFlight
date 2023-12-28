@@ -76,11 +76,12 @@ void Attach(osgViewer::Viewer* viewer_)
     _viewer->getCamera()->addCullCallback(new osgEarth::Util::AutoClipPlaneCullCallback(mapNode));
 }
 void View(const osgEarth::Viewpoint& viewpoint, int delta) {
-    _cameraManipulator->setViewpoint(viewpoint, 4);
+    _cameraManipulator->setViewpoint(
+        viewpoint, 4);
 }
 void Destory() {
-    _root.release();
-    _cameraManipulator.release();
+    /*_root.release();
+    _cameraManipulator.release();*/
 }
 }   // namespace context
 }   // namespace uavmvs
