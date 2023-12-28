@@ -26,6 +26,7 @@
 #include <tbb/tbb.h>
 #include "Utils/CLabelControlEventHandler.h"
 #include "Utils/Parse.h"
+#include "Utils/HUDAxis.h"
 
 osgViewer::Viewer* _viewer;
 osg::ref_ptr<osg::Group>                       _root;
@@ -54,6 +55,18 @@ void Attach(osgViewer::Viewer* viewer_)
     _mapNode                              = osgEarth::MapNode::findMapNode(node);
     auto map                              = _mapNode->getMap();
 
+    // 坐标轴显示
+    auto axesPath = binPath / "osgEarth/axes.osgt";
+    osg::ref_ptr<osg::Node> spAxes   = osgDB::readNodeFile(axesPath.generic_string());
+    osg::ref_ptr<HUDAxis> hudAxes = new HUDAxis;
+    _root->addChild(hudAxes);
+    hudAxes->addChild(spAxes);
+    osg::ref_ptr<osg::Camera> spCamera = _viewer->getCamera();
+    hudAxes->setMainCamera(spCamera);
+    hudAxes->setRenderOrder(osg::Camera::POST_RENDER);   // 坐标轴最后渲染，即在所有其它三维场景前面
+    hudAxes->setClearMask(GL_DEPTH_BUFFER_BIT);                // 关闭深度缓冲
+    hudAxes->setAllowEventFocus(false);                        // 禁止鼠标、键盘事件
+    hudAxes->setReferenceFrame(osg::Transform::ABSOLUTE_RF);   // 绝对参考帧
 
     osgEarth::SkyOptions skyOptions;   // 天空环境选项
     skyOptions.ambient() = 0.1;        // 环境光照水平(0~1)
