@@ -159,6 +159,12 @@ void AddLayer(const QString& dir_, std::function<void(int)> callback_)
 
     _root->addChild(xform);
 }
+void SetupMetadata(const boost::filesystem::path& matadataPath_) {
+    _layerGeoPoint.reset();
+    auto geopoint   = ParseMetaDataFile(matadataPath_);
+    _layerGeoPoint  = std::make_unique<osgEarth::GeoPoint>();
+    *_layerGeoPoint = geopoint;
+}
 void HomeLayerView() {
     if (_layerGeoPoint) {
         osgEarth::Viewpoint vp;

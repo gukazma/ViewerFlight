@@ -2,7 +2,7 @@
 set(TARGET_NAME ViewerFlight)
 
 
-find_package(Qt5 COMPONENTS Core Widgets Gui OpenGL CONFIG REQUIRED)
+find_package(Qt5 COMPONENTS Core Widgets Gui OpenGL Concurrent CONFIG REQUIRED)
 
 # 开启 MOC
 set(CMAKE_AUTOUIC ON)
@@ -37,6 +37,7 @@ Qt5::Core
 Qt5::Gui
 Qt5::Widgets
 Qt5::OpenGL
+Qt5::Concurrent
 uavmvs::uavmvs
 )
 target_include_directories(${TARGET_NAME} PRIVATE

@@ -7,14 +7,22 @@
 #include <QDragEnterEvent>
 #include <QLabel>
 #include <QMimeData>
+#include <QProgressDialog>
 #include <QMessageBox>
+#include <QtConcurrentMap>
 #include <UAVMVS/Context.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
+#include <osgDB/ReadFile>
+#include <osg/ComputeBoundsVisitor>
 #include <iostream>
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
+MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
+    ,
     ui(new Ui::MainWindow)
-{
+{   
     ui->setupUi(this);
+    createProgressDialog();
+
     setAcceptDrops(true);
     // ¾­¶È
     QLineEdit* lineEdit_Longitude = new QLineEdit(this);
@@ -74,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
         auto layerDir = QFileDialog::getExistingDirectory(nullptr, tr("Open layer dir"));
         if (!layerDir.isEmpty()) {
             try {
-                uavmvs::context::AddLayer(layerDir);
+                addLayer(layerDir);
             }
             catch (const std::exception& e) {
                 QMessageBox::warning(nullptr, "", e.what());
@@ -88,28 +96,92 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::dragEnterEvent(QDragEnterEvent* event) {
-    if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() == 1) {
-        const QUrl url = event->mimeData()->urls().at(0);
+void MainWindow::dragEnterEvent(QDragEnterEvent* event_) {
+    if (event_->mimeData()->hasUrls() && event_->mimeData()->urls().size() == 1) {
+        const QUrl url = event_->mimeData()->urls().at(0);
         if (url.isLocalFile() && QFileInfo(url.toLocalFile()).isDir()) {
-            event->acceptProposedAction();
+            event_->acceptProposedAction();
             return;
         }
     }
-    event->ignore();
+    event_->ignore();
 }
 
-void MainWindow::dropEvent(QDropEvent* event) {
-    const QUrl    url        = event->mimeData()->urls().at(0);
+void MainWindow::dropEvent(QDropEvent* event_)
+{
+    const QUrl    url        = event_->mimeData()->urls().at(0);
     const QString folderPath = url.toLocalFile();
     std::cout << "folder: " << folderPath.toStdString() << std::endl;
     try {
-        uavmvs::context::AddLayer(folderPath);
+        addLayer(folderPath);
     }
     catch (const std::exception& e) {
         QMessageBox::warning(nullptr, "", e.what());
     }
-    event->acceptProposedAction();
+    event_->acceptProposedAction();
+}
+
+void MainWindow::addLayer(const QString& dir_) {
+    boost::filesystem::path dir          = dir_.toLocal8Bit().constData();
+    boost::filesystem::path metadataPath = dir / "metadata.xml";
+    if (!boost::filesystem::exists(metadataPath)) {
+        throw std::runtime_error("metadata.xml not exits!");
+        return;
+    }
+    uavmvs::context::SetupMetadata(metadataPath);
+    
+    std::vector<boost::filesystem::path> tilePaths;
+    for (const auto& entry : boost::filesystem::directory_iterator(dir)) {
+        if (boost::filesystem::is_directory(entry) &&
+            boost::algorithm::contains(entry.path().filename().string(), "Tile_")) {
+            auto tilePath = entry.path() / entry.path().filename();
+            tilePath.replace_extension(".osgb");
+            if (boost::filesystem::exists(tilePath)) {
+                tilePaths.push_back(tilePath);
+            }
+        }
+    }
+    osg::ref_ptr<osg::Group> tiles = new osg::Group;
+    osg::BoundingBox       bbox;
+    std::mutex                           modelsMutex;
+
+    auto readOsgb = [&](const boost::filesystem::path& tilePath) {
+        auto node = osgDB::readRefNodeFile(tilePath.generic_string().c_str());
+        osg::ComputeBoundsVisitor computeBoundsVisitor;
+        node->accept(computeBoundsVisitor);
+        std::lock_guard<std::mutex> lk(modelsMutex);
+        bbox.expandBy(computeBoundsVisitor.getBoundingBox());
+        tiles->addChild(node);
+    };
+
+    m_futureWather.setFuture(QtConcurrent::map(tilePaths, readOsgb));
+    m_prgDialog->setVisible(true);
+    m_prgDialog->exec();
+    m_futureWather.waitForFinished();
+}
+
+void MainWindow::createProgressDialog() {
+    if (!m_prgDialog) {
+        m_prgDialog = new QProgressDialog(this);
+        m_prgDialog->close();
+        connect(&m_futureWather, &QFutureWatcher<void>::finished, [&]() { 
+            if (m_prgDialog) {
+                m_prgDialog->setVisible(false);
+            }
+        });
+        connect(m_prgDialog,
+                &QProgressDialog::canceled,
+                &m_futureWather,
+                &QFutureWatcher<void>::cancel);
+        connect(&m_futureWather,
+                &QFutureWatcher<void>::progressRangeChanged,
+                m_prgDialog,
+                &QProgressDialog::setRange);
+        connect(&m_futureWather,
+                &QFutureWatcher<void>::progressValueChanged,
+                m_prgDialog,
+                &QProgressDialog::setValue);
+    }
 }
 
 
