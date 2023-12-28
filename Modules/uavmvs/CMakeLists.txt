@@ -7,6 +7,7 @@ find_package(osgearth)
 find_package(LibKML REQUIRED)
 find_package(Boost REQUIRED)
 find_package(Qt5 COMPONENTS Core Widgets Gui OpenGL CONFIG REQUIRED)
+find_package(TBB REQUIRED)
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${HPP_FILES} ${CPP_FILES})
 
@@ -29,6 +30,7 @@ Boost::filesystem
 Boost::dynamic_linking
 Boost::thread
 CONAN_PKG::osgearth
+TBB::TBB
 kmlbase kmlconvenience kmldom kmlengine
           )
 

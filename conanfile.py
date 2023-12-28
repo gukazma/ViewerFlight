@@ -32,6 +32,7 @@ class ModuleConan(ConanFile):
         self.requires("osgearth/3.3")
         self.requires("boost/1.83.0")
         self.requires("libkml/1.3.0")
+        self.requires("tbb/2020.3")
 
         
     def imports(self):

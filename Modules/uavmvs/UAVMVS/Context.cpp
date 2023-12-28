@@ -23,6 +23,7 @@
 #include <boost/algorithm/string.hpp>
 #include <osgGA/MultiTouchTrackballManipulator>
 #include <memory>
+#include <tbb/tbb.h>
 #include "Utils/CLabelControlEventHandler.h"
 #include "Utils/Parse.h"
 
@@ -103,21 +104,31 @@ void AddLayer(const QString& dir_, std::function<void(int)> callback_)
     // xform->setPosition(point);
     xform->setTerrain(_mapNode->getTerrain());
     osg::BoundingBox bbox;
+    std::mutex       modelsMutex;
+    std::vector<boost::filesystem::path> tilePaths;
     for (const auto& entry : boost::filesystem::directory_iterator(dir)) {
         if (boost::filesystem::is_directory(entry) &&
             boost::algorithm::contains(entry.path().filename().string(), "Tile_")) {
             auto tilePath = entry.path() / entry.path().filename();
             tilePath.replace_extension(".osgb");
             if (boost::filesystem::exists(tilePath)) {
-                auto node = osgDB::readNodeFile(tilePath.generic_string()); 
-                osg::ComputeBoundsVisitor computeBoundsVisitor;
-                node->accept(computeBoundsVisitor);
-                bbox.expandBy(computeBoundsVisitor.getBoundingBox());
-                xform->addChild(node);
+                tilePaths.push_back(tilePath);
+                
             }
         }
     }
-
+    tbb::parallel_for(tbb::blocked_range<size_t>(0, tilePaths.size()),
+    [&](const tbb::blocked_range<size_t>& r) {
+        for (size_t i = r.begin(); i != r.end(); i++) {
+            auto tilePath = tilePaths[i];
+            auto node = osgDB::readNodeFile(tilePath.generic_string());
+            osg::ComputeBoundsVisitor computeBoundsVisitor;
+            node->accept(computeBoundsVisitor);
+            std::lock_guard<std::mutex> lk(modelsMutex);
+            bbox.expandBy(computeBoundsVisitor.getBoundingBox());
+            xform->addChild(node);
+        }
+    });
     // 查询海拔高度
     osgEarth::ElevationQuery elevationQuery(_mapNode->getMap());
     double elevation = 0.0;
