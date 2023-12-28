@@ -14,6 +14,7 @@
 #include <osgEarth/ModelLayer>
 #include <osgEarth/Registry>
 #include <osgEarth/Sky>
+#include <osgEarth/ElevationQuery>
 #include <osgEarth/SpatialReference>
 #include <osgViewer/Viewer>
 #include <osg/BlendFunc>
@@ -93,30 +94,40 @@ void AddLayer(const QString& _dir) {
         return;
     }
     auto geopoint = ParseMetaDataFile(metadataPath);
-
-    osgEarth::Viewpoint vp;
-    vp.focalPoint() = geopoint;
-    vp.setHeading(std::string("0"));
-    vp.setPitch(std::string("-45"));
-    vp.setRange(std::string("5000"));
-    View(vp, 5);
-
     osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
     // xform->setPosition(point);
     xform->setTerrain(_mapNode->getTerrain());
-    xform->setPosition(geopoint);
-
-
+    osg::BoundingBox bbox;
     for (const auto& entry : boost::filesystem::directory_iterator(dir)) {
         if (boost::filesystem::is_directory(entry) &&
             boost::algorithm::contains(entry.path().filename().string(), "Tile_")) {
             auto tilePath = entry.path() / entry.path().filename();
             tilePath.replace_extension(".osgb");
             if (boost::filesystem::exists(tilePath)) {
-                xform->addChild(osgDB::readNodeFile(tilePath.generic_string()));
+                auto node = osgDB::readNodeFile(tilePath.generic_string()); 
+                osg::ComputeBoundsVisitor computeBoundsVisitor;
+                node->accept(computeBoundsVisitor);
+                bbox.expandBy(computeBoundsVisitor.getBoundingBox());
+                xform->addChild(node);
             }
         }
     }
+
+    // 查询海拔高度
+    osgEarth::ElevationQuery elevationQuery(_mapNode->getMap());
+    double elevation = 0.0;
+    elevationQuery.getElevation(geopoint, elevation);
+    geopoint.z() = elevation - bbox.zMin();
+    std::cout << geopoint.z() << std::endl;
+    osgEarth::Viewpoint vp;
+    vp.focalPoint() = geopoint;
+    xform->setPosition(geopoint);
+
+    vp.setHeading(std::string("0"));
+    vp.setPitch(std::string("-45"));
+    vp.setRange(std::string("5000"));
+    View(vp, 5);
+
     _root->addChild(xform);
 }
 void Destory() {
