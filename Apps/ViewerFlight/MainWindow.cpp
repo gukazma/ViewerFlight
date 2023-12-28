@@ -19,13 +19,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QLineEdit* lineEdit_Longitude = new QLineEdit(this);
     lineEdit_Longitude->setGeometry(100, 100, 180, 80);
     lineEdit_Longitude->setMaximumWidth(100);
-    lineEdit_Longitude->setText("0.000");
+    lineEdit_Longitude->setText("121.31");
 
     // Î³¶È
     QLineEdit* lineEdit_Latitude = new QLineEdit(this);
     lineEdit_Latitude->setGeometry(100, 200, 180, 80);
     lineEdit_Latitude->setMaximumWidth(100);
-    lineEdit_Latitude->setText("0.000");
+    lineEdit_Latitude->setText("31.16");
     
 
     QPushButton* viewButton = new QPushButton(tr ("View"), this);

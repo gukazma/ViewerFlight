@@ -64,6 +64,10 @@ void Attach(osgViewer::Viewer* viewer_)
     _viewer->realize();
     // m_root->addChild(node);
     _viewer->setSceneData(_root);
+    // ´´½¨ DatabasePager
+    osgDB::DatabasePager* pager = new osgDB::DatabasePager;
+    _viewer->setDatabasePager(pager);
+
     osgEarth::Util::Controls::LabelControl* positionLabel =
         new osgEarth::Util::Controls::LabelControl("", osg::Vec4(1.0, 1.0, 1.0, 1.0));
     _viewer->addEventHandler(new CLabelControlEventHandler(mapNode, positionLabel));
