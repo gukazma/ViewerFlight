@@ -4,13 +4,17 @@
 #include <QRegExpValidator>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QDragEnterEvent>
 #include <QLabel>
+#include <QMimeData>
 #include <UAVMVS/Context.hpp>
+#include <iostream>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setAcceptDrops(true);
     // ¾­¶È
     QLineEdit* lineEdit_Longitude = new QLineEdit(this);
     lineEdit_Longitude->setGeometry(100, 100, 180, 80);
@@ -70,4 +74,23 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::dragEnterEvent(QDragEnterEvent* event) {
+    if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() == 1) {
+        const QUrl url = event->mimeData()->urls().at(0);
+        if (url.isLocalFile() && QFileInfo(url.toLocalFile()).isDir()) {
+            event->acceptProposedAction();
+            return;
+        }
+    }
+    event->ignore();
+}
+
+void MainWindow::dropEvent(QDropEvent* event) {
+    const QUrl    url        = event->mimeData()->urls().at(0);
+    const QString folderPath = url.toLocalFile();
+    std::cout << "folder: " << folderPath.toStdString() << std::endl;
+    event->acceptProposedAction();
+}
+
 

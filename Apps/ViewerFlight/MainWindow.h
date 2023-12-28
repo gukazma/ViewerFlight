@@ -15,7 +15,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-public slots:
+protected:
+    void dragEnterEvent(QDragEnterEvent* event) override;
+
+    void dropEvent(QDropEvent* event) override;
 
 private:
     Ui::MainWindow *ui;
