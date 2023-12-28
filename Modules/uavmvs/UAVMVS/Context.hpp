@@ -11,8 +11,9 @@ namespace context
 void Init();
 void Attach(osgViewer::Viewer* viewer_);
 void View(const osgEarth::Viewpoint& viewpoint, int delta);
-void AddLayer(const QString& dir_, std::function<void(int)> callback_ = std::function<void(int)>());
-void SetupMetadata(const boost::filesystem::path& matadataPath_);
+void AddLayer(osg::ref_ptr<osg::Group> tiles_, osg::BoundingBox bbox_);
+void SetupMetadata(
+    const boost::filesystem::path& matadataPath_);
 void HomeLayerView();
 void Destory();
 }

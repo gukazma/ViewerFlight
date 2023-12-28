@@ -158,6 +158,7 @@ void MainWindow::addLayer(const QString& dir_) {
     m_prgDialog->setVisible(true);
     m_prgDialog->exec();
     m_futureWather.waitForFinished();
+    uavmvs::context::AddLayer(tiles, bbox);
 }
 
 void MainWindow::createProgressDialog() {

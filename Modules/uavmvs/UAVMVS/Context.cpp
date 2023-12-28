@@ -101,52 +101,17 @@ void View(const osgEarth::Viewpoint& viewpoint, int delta) {
     _cameraManipulator->setViewpoint(
         viewpoint, 4);
 }
-void AddLayer(const QString& dir_, std::function<void(int)> callback_)
-{
-    boost::filesystem::path dir = dir_.toLocal8Bit().constData();
-    boost::filesystem::path metadataPath = dir / "metadata.xml";
-    if (!boost::filesystem::exists(metadataPath)) {
-        throw std::runtime_error("metadata.xml not exits!");
-        return;
-    }
-    _layerGeoPoint.reset();
-    auto geopoint = ParseMetaDataFile(metadataPath);
-    _layerGeoPoint                             = std::make_unique<osgEarth::GeoPoint>();
-    *_layerGeoPoint                            = geopoint;
+void AddLayer(osg::ref_ptr<osg::Group> tiles_, osg::BoundingBox bbox_) {
     osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
-    // xform->setPosition(point);
     xform->setTerrain(_mapNode->getTerrain());
-    osg::BoundingBox bbox;
-    std::mutex       modelsMutex;
-    std::vector<boost::filesystem::path> tilePaths;
-    for (const auto& entry : boost::filesystem::directory_iterator(dir)) {
-        if (boost::filesystem::is_directory(entry) &&
-            boost::algorithm::contains(entry.path().filename().string(), "Tile_")) {
-            auto tilePath = entry.path() / entry.path().filename();
-            tilePath.replace_extension(".osgb");
-            if (boost::filesystem::exists(tilePath)) {
-                tilePaths.push_back(tilePath);
-                
-            }
-        }
-    }
-    tbb::parallel_for(tbb::blocked_range<size_t>(0, tilePaths.size()),
-    [&](const tbb::blocked_range<size_t>& r) {
-        for (size_t i = r.begin(); i != r.end(); i++) {
-            auto tilePath = tilePaths[i];
-            auto node = osgDB::readNodeFile(tilePath.generic_string());
-            osg::ComputeBoundsVisitor computeBoundsVisitor;
-            node->accept(computeBoundsVisitor);
-            std::lock_guard<std::mutex> lk(modelsMutex);
-            bbox.expandBy(computeBoundsVisitor.getBoundingBox());
-            xform->addChild(node);
-        }
-    });
+    xform->addChild(tiles_);
+
     // 查询海拔高度
     osgEarth::ElevationQuery elevationQuery(_mapNode->getMap());
-    double elevation = 0.0;
-    elevationQuery.getElevation(geopoint, elevation);
-    geopoint.z() = elevation - bbox.zMin();
+    double                   elevation = 0.0;
+    elevationQuery.getElevation(*_layerGeoPoint, elevation);
+    auto geopoint = *_layerGeoPoint;
+    geopoint.z() = elevation - bbox_.zMin();
     std::cout << geopoint.z() << std::endl;
     osgEarth::Viewpoint vp;
     vp.focalPoint() = geopoint;
