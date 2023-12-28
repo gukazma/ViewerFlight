@@ -7,6 +7,7 @@
 #include <QDragEnterEvent>
 #include <QLabel>
 #include <QMimeData>
+#include <QMessageBox>
 #include <UAVMVS/Context.hpp>
 #include <iostream>
 MainWindow::MainWindow(QWidget *parent) :
@@ -65,7 +66,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(addLayerButton, &QPushButton::clicked, [=]() {
         auto layerDir = QFileDialog::getExistingDirectory(nullptr, tr("Open layer dir"));
         if (!layerDir.isEmpty()) {
-
+            try {
+                uavmvs::context::AddLayer(layerDir);
+            }
+            catch (const std::exception& e) {
+                QMessageBox::warning(nullptr, "", e.what());
+            }
         }
     });
 }
@@ -90,6 +96,12 @@ void MainWindow::dropEvent(QDropEvent* event) {
     const QUrl    url        = event->mimeData()->urls().at(0);
     const QString folderPath = url.toLocalFile();
     std::cout << "folder: " << folderPath.toStdString() << std::endl;
+    try {
+        uavmvs::context::AddLayer(folderPath);
+    }
+    catch (const std::exception& e) {
+        QMessageBox::warning(nullptr, "", e.what());
+    }
     event->acceptProposedAction();
 }
 

@@ -83,6 +83,14 @@ void View(const osgEarth::Viewpoint& viewpoint, int delta) {
     _cameraManipulator->setViewpoint(
         viewpoint, 4);
 }
+void AddLayer(const QString& _dir) {
+    boost::filesystem::path dir = _dir.toLocal8Bit().constData();
+    boost::filesystem::path metadataPath = dir / "metadata.xml";
+    if (!boost::filesystem::exists(metadataPath)) {
+        throw std::runtime_error("metadata.xml not exits!");
+        return;
+    }
+}
 void Destory() {
     /*_root.release();
     _cameraManipulator.release();*/
