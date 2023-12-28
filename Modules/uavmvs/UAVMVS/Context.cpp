@@ -63,7 +63,7 @@ void Attach(osgViewer::Viewer* viewer_)
     _root->addChild(skyNode);
     _viewer->realize();
     // m_root->addChild(node);
-    _viewer->setSceneData(skyNode);
+    _viewer->setSceneData(_root);
     osgEarth::Util::Controls::LabelControl* positionLabel =
         new osgEarth::Util::Controls::LabelControl("", osg::Vec4(1.0, 1.0, 1.0, 1.0));
     _viewer->addEventHandler(new CLabelControlEventHandler(mapNode, positionLabel));
