@@ -19,6 +19,7 @@
 #include <osg/BlendFunc>
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 #include <osgGA/MultiTouchTrackballManipulator>
 #include "Utils/CLabelControlEventHandler.h"
 #include "Utils/Parse.h"
@@ -26,6 +27,7 @@
 osgViewer::Viewer* _viewer;
 osg::ref_ptr<osg::Group>                       _root;
 osg::ref_ptr<osgEarth::Util::EarthManipulator> _cameraManipulator;
+osg::ref_ptr<osgEarth::MapNode>                _mapNode;
 
 namespace uavmvs {
 namespace context {
@@ -46,8 +48,8 @@ void Attach(osgViewer::Viewer* viewer_)
     auto                    resourcesPath = binPath / "osgEarth/china-simple.earth";
     auto                    node          = osgDB::readRefNodeFile(resourcesPath.generic_string());
     _root                                = new osg::Group();
-    auto mapNode                          = osgEarth::MapNode::findMapNode(node);
-    auto map                              = mapNode->getMap();
+    _mapNode                              = osgEarth::MapNode::findMapNode(node);
+    auto map                              = _mapNode->getMap();
 
 
     osgEarth::SkyOptions skyOptions;   // 天空环境选项
@@ -58,7 +60,7 @@ void Attach(osgViewer::Viewer* viewer_)
         osgEarth::DateTime(2021, 4, 15, 0));   // 配置环境的日期/时间。(格林尼治，时差8小时)
     skyNode->setEphemeris(new osgEarth::Util::Ephemeris);   // 用于根据日期/时间定位太阳和月亮的星历
     skyNode->setLighting(true);                             // 天空是否照亮了它的子图
-    skyNode->addChild(mapNode);                             // 添加地图节点
+    skyNode->addChild(_mapNode);                            // 添加地图节点
     skyNode->attach(_viewer);   // 将此天空节点附着到视图（放置天光）
     _root->addChild(skyNode);
     _viewer->realize();
@@ -70,14 +72,14 @@ void Attach(osgViewer::Viewer* viewer_)
 
     osgEarth::Util::Controls::LabelControl* positionLabel =
         new osgEarth::Util::Controls::LabelControl("", osg::Vec4(1.0, 1.0, 1.0, 1.0));
-    _viewer->addEventHandler(new CLabelControlEventHandler(mapNode, positionLabel));
+    _viewer->addEventHandler(new CLabelControlEventHandler(_mapNode, positionLabel));
     _root->addChild(osgEarth::Util::Controls::ControlCanvas::get(_viewer));
     osgEarth::Util::Controls::ControlCanvas* canvas =
         osgEarth::Util::Controls::ControlCanvas::get(_viewer);
     canvas->addControl(positionLabel);
 
     // initialize a viewer:
-    _viewer->getCamera()->addCullCallback(new osgEarth::Util::AutoClipPlaneCullCallback(mapNode));
+    _viewer->getCamera()->addCullCallback(new osgEarth::Util::AutoClipPlaneCullCallback(_mapNode));
 }
 void View(const osgEarth::Viewpoint& viewpoint, int delta) {
     _cameraManipulator->setViewpoint(
@@ -90,6 +92,32 @@ void AddLayer(const QString& _dir) {
         throw std::runtime_error("metadata.xml not exits!");
         return;
     }
+    auto geopoint = ParseMetaDataFile(metadataPath);
+
+    osgEarth::Viewpoint vp;
+    vp.focalPoint() = geopoint;
+    vp.setHeading(std::string("0"));
+    vp.setPitch(std::string("-45"));
+    vp.setRange(std::string("5000"));
+    View(vp, 5);
+
+    osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
+    // xform->setPosition(point);
+    xform->setTerrain(_mapNode->getTerrain());
+    xform->setPosition(geopoint);
+
+
+    for (const auto& entry : boost::filesystem::directory_iterator(dir)) {
+        if (boost::filesystem::is_directory(entry) &&
+            boost::algorithm::contains(entry.path().filename().string(), "Tile_")) {
+            auto tilePath = entry.path() / entry.path().filename();
+            tilePath.replace_extension(".osgb");
+            if (boost::filesystem::exists(tilePath)) {
+                xform->addChild(osgDB::readNodeFile(tilePath.generic_string()));
+            }
+        }
+    }
+    _root->addChild(xform);
 }
 void Destory() {
     /*_root.release();
