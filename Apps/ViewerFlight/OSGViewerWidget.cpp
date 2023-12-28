@@ -28,7 +28,6 @@ OSGViewerWidget::OSGViewerWidget(QWidget* parent) {
 }
 
 OSGViewerWidget::~OSGViewerWidget() {
-    uavmvs::context::Destory();
 }
 
 void OSGViewerWidget::home() {

@@ -20,12 +20,16 @@ ${CMAKE_CURRENT_SOURCE_DIR}/Vendors/osgQt/osgQOpenGL/osgQOpenGLWidget
 ${CMAKE_CURRENT_SOURCE_DIR}/Vendors/osgQt/osgQOpenGL/osgQOpenGLWindow
 ${CMAKE_CURRENT_SOURCE_DIR}/Vendors/osgQt/osgQOpenGL/OSGRenderer
 )
+set(QRC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/QResources/resources.qrc)
+set(APPRC_FILE ${CMAKE_CURRENT_SOURCE_DIR}/QResources/appicon.rc)
+set(Translatefile ${CMAKE_CURRENT_SOURCE_DIR}/QResources/Translations/zh_CN.ts)
+
 QT5_WRAP_CPP(MOC_SOURCES ${OSGQT_HEAD})
 
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${CPP_HEAD_FILES} ${CPP_SOUCE_FILES} ${OSGQT_HEAD})
 
-add_executable(${TARGET_NAME} ${CPP_HEAD_FILES} ${CPP_SOUCE_FILES} ${UI_SOUCE_FILES} ${MOC_SOURCES} ${OSGQT_HEAD})
+add_executable(${TARGET_NAME} ${CPP_HEAD_FILES} ${CPP_SOUCE_FILES} ${UI_SOUCE_FILES} ${MOC_SOURCES} ${OSGQT_HEAD} ${QRC_FILE} ${APPRC_FILE} ${Translatefile})
 set_target_properties(${TARGET_NAME} PROPERTIES FOLDER Apps)
 # 链接 Conan 指向的 Qt 库文件
 target_link_libraries(${TARGET_NAME} PRIVATE
@@ -55,3 +59,20 @@ add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
         ${CMAKE_BINARY_DIR}/bin
     COMMENT "Copying resources to output directory"
 )
+
+find_program(LUPDATE_EXE lupdate)
+add_custom_target(
+      TranslateUpdate
+      COMMAND ${LUPDATE_EXE} -recursive ./ -ts ./QResources/Translations/zh_CN.ts
+      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+      VERBATIM)
+
+find_program(LRELEASE_EXE lrelease)
+add_custom_target(
+      TranslateRelease
+      COMMAND ${LRELEASE_EXE} ./QResources/Translations/zh_CN.ts
+      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+      VERBATIM)
+
+set_target_properties(TranslateUpdate PROPERTIES FOLDER Apps)
+set_target_properties(TranslateRelease PROPERTIES FOLDER Apps)

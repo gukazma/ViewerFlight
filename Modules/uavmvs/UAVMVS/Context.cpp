@@ -23,7 +23,7 @@
 #include "Utils/CLabelControlEventHandler.h"
 #include "Utils/Parse.h"
 
-osg::ref_ptr<osgViewer::Viewer> _viewer;
+osgViewer::Viewer* _viewer;
 osg::ref_ptr<osg::Group>                       _root;
 osg::ref_ptr<osgEarth::Util::EarthManipulator> _cameraManipulator;
 
@@ -33,7 +33,7 @@ void Init()
 {
     osgEarth::initialize();
 }
-void Attach(osg::ref_ptr<osgViewer::Viewer> viewer_)
+void Attach(osgViewer::Viewer* viewer_)
 {
     _viewer = viewer_;
 
@@ -82,7 +82,6 @@ void View(const osgEarth::Viewpoint& viewpoint, int delta) {
 void Destory() {
     _root.release();
     _cameraManipulator.release();
-    _viewer.release();
 }
 }   // namespace context
 }   // namespace uavmvs

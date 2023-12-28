@@ -3,6 +3,7 @@
 #include <QLineEdit>
 #include <QRegExpValidator>
 #include <QPushButton>
+#include <QLabel>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -11,27 +12,28 @@ MainWindow::MainWindow(QWidget *parent) :
     // ¾­¶È
     QLineEdit* lineEdit_Longitude = new QLineEdit(this);
     lineEdit_Longitude->setGeometry(100, 100, 180, 80);
-    lineEdit_Longitude->setMaximumWidth(100);
-    QRegExp regExp_Longitude(QString::fromLocal8Bit("(E|W)?[0-1][0-7]\\d¡ã[0-5]\\d'[0-5]\\d\""));
-    lineEdit_Longitude->setValidator(new QRegExpValidator(regExp_Longitude, lineEdit_Longitude));
-    lineEdit_Longitude->setInputMask(QString::fromLocal8Bit("A000¡ã00'00\""));
-    lineEdit_Longitude->setText(QString::fromLocal8Bit("E000¡ã00'00\""));
+    lineEdit_Longitude->setMaximumWidth(150);
+    lineEdit_Longitude->setText("0.000");
 
     // Î³¶È
     QLineEdit* lineEdit_Latitude = new QLineEdit(this);
     lineEdit_Latitude->setGeometry(100, 200, 180, 80);
-    lineEdit_Latitude->setMaximumWidth(100);
-    QRegExp regExp_Latitude(QString::fromLocal8Bit("(N|S)?[0-8]\\d¡ã[0-5]\\d'[0-5]\\d\""));
-    lineEdit_Latitude->setValidator(new QRegExpValidator(regExp_Latitude, lineEdit_Latitude));
-    lineEdit_Latitude->setInputMask(QString::fromLocal8Bit("A00¡ã00'00\""));
-    lineEdit_Latitude->setText(QString::fromLocal8Bit("N00¡ã00'00\""));
+    lineEdit_Latitude->setMaximumWidth(150);
+    lineEdit_Latitude->setText("0.000");
+    
 
-    QPushButton* viewButton = new QPushButton("View", this);
+    QPushButton* viewButton = new QPushButton(tr ("View"), this);
     viewButton->setMaximumWidth(50);
     QWidget*     widget   = new QWidget(this);
     QHBoxLayout* layout   = new QHBoxLayout(widget);
     layout->setAlignment(Qt::AlignLeft);
+    QLabel* label_Longitude = new QLabel(tr("Longitude"));
+    label_Longitude->setMaximumWidth(80);
+    QLabel* label_Latitude = new QLabel(tr("Latitude"));
+    label_Latitude->setMaximumWidth(80);
+    layout->addWidget(label_Longitude);
     layout->addWidget(lineEdit_Longitude);
+    layout->addWidget(label_Latitude);
     layout->addWidget(lineEdit_Latitude);
     layout->addWidget(viewButton);
     widget->setLayout(layout);
@@ -45,7 +47,3 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_actionHome_triggered()
-{
-    ui->osgviewer->home();
-}
