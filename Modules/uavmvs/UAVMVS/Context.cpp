@@ -22,6 +22,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <osgGA/MultiTouchTrackballManipulator>
+#include <memory>
 #include "Utils/CLabelControlEventHandler.h"
 #include "Utils/Parse.h"
 
@@ -29,7 +30,7 @@ osgViewer::Viewer* _viewer;
 osg::ref_ptr<osg::Group>                       _root;
 osg::ref_ptr<osgEarth::Util::EarthManipulator> _cameraManipulator;
 osg::ref_ptr<osgEarth::MapNode>                _mapNode;
-
+std::unique_ptr<osgEarth::GeoPoint> _layerGeoPoint;
 namespace uavmvs {
 namespace context {
 void Init()
@@ -94,7 +95,10 @@ void AddLayer(const QString& dir_, std::function<void(int)> callback_)
         throw std::runtime_error("metadata.xml not exits!");
         return;
     }
+    _layerGeoPoint.reset();
     auto geopoint = ParseMetaDataFile(metadataPath);
+    _layerGeoPoint                             = std::make_unique<osgEarth::GeoPoint>();
+    *_layerGeoPoint                            = geopoint;
     osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
     // xform->setPosition(point);
     xform->setTerrain(_mapNode->getTerrain());
@@ -130,6 +134,16 @@ void AddLayer(const QString& dir_, std::function<void(int)> callback_)
     View(vp, 5);
 
     _root->addChild(xform);
+}
+void HomeLayerView() {
+    if (_layerGeoPoint) {
+        osgEarth::Viewpoint vp;
+        vp.focalPoint() = *_layerGeoPoint;
+        vp.setHeading(std::string("0"));
+        vp.setPitch(std::string("-45"));
+        vp.setRange(std::string("5000"));
+        View(vp, 5);
+    }
 }
 void Destory() {
     /*_root.release();

@@ -387,6 +387,10 @@
         <source>Open layer dir</source>
         <translation type="unfinished">打开模型目录</translation>
     </message>
+    <message>
+        <source>Home layer</source>
+        <translation type="unfinished">重置模型视角</translation>
+    </message>
 </context>
 <context>
     <name>MeshTreeWidgetItem</name>

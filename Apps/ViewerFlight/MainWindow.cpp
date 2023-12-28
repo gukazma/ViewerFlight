@@ -50,8 +50,11 @@ MainWindow::MainWindow(QWidget *parent) :
     layout->addWidget(separator);
 
     QPushButton* addLayerButton = new QPushButton(tr("Add layer"));
+    QPushButton* homeLayerButton = new QPushButton(tr("Home layer"));
     addLayerButton->setMaximumWidth(100);
+    homeLayerButton->setMaximumWidth(130);
     layout->addWidget(addLayerButton);
+    layout->addWidget(homeLayerButton);
     widget->setLayout(layout);
     
     // 将QWidget部件添加到工具栏
@@ -61,6 +64,10 @@ MainWindow::MainWindow(QWidget *parent) :
         float longitue = lineEdit_Longitude->text().toFloat();
         float latitude = lineEdit_Latitude->text().toFloat();
         uavmvs::context::View(osgEarth::Viewpoint("", longitue, latitude, 5000, 0, -90, 1000), 5);
+    });
+
+    connect(homeLayerButton, &QPushButton::clicked, [=]() {
+        uavmvs::context::HomeLayerView();
     });
 
     connect(addLayerButton, &QPushButton::clicked, [=]() {
