@@ -28,12 +28,14 @@
 #include "Utils/CLabelControlEventHandler.h"
 #include "Utils/Parse.h"
 #include "Utils/HUDAxis.h"
+#include "Utils/EventHandler.h"
 
 osgViewer::Viewer* _viewer;
 osg::ref_ptr<osg::Group>                       _root;
 osg::ref_ptr<osgEarth::Util::EarthManipulator> _cameraManipulator;
 osg::ref_ptr<osgEarth::MapNode>                _mapNode;
-std::shared_ptr<osgEarth::GeoPoint> _layerGeoPoint;
+osg::ref_ptr<EventHandler>                     _eventHandler;
+std::shared_ptr<osgEarth::GeoPoint>                                  _layerGeoPoint;
 std::unordered_map<std::string, std::shared_ptr<osgEarth::GeoPoint>>
     _loadedTileGeoPoint;
 namespace uavmvs {
@@ -99,6 +101,9 @@ void Attach(osgViewer::Viewer* viewer_)
 
     // initialize a viewer:
     _viewer->getCamera()->addCullCallback(new osgEarth::Util::AutoClipPlaneCullCallback(_mapNode));
+
+    _eventHandler = new EventHandler(_root, _mapNode);
+    _viewer->addEventHandler(_eventHandler);
 }
 void View(const osgEarth::Viewpoint& viewpoint, int delta) {
     _cameraManipulator->setViewpoint(
@@ -118,6 +123,12 @@ bool ViewLoadedTile(const boost::filesystem::path& path_)
 void AddLayer(osg::ref_ptr<osg::Group> tiles_, osg::BoundingBox bbox_) {
     osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
     xform->setTerrain(_mapNode->getTerrain());
+
+    for (size_t i = 0; i < tiles_->getNumChildren(); i++) {
+        auto node = tiles_->getChild(i);
+        node->setName("TileNode");
+    }
+
     xform->addChild(tiles_);
 
     // 查询海拔高度
@@ -157,6 +168,9 @@ void HomeLayerView() {
 void Destory() {
     /*_root.release();
     _cameraManipulator.release();*/
+}
+void DrawWaypoint() {
+    _eventHandler->isOpen = true;
 }
 }   // namespace context
 }   // namespace uavmvs

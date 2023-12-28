@@ -391,6 +391,14 @@
         <source>Home layer</source>
         <translation type="unfinished">重置模型视角</translation>
     </message>
+    <message>
+        <source>Draw waypoint</source>
+        <translation type="unfinished">绘制航点</translation>
+    </message>
+    <message>
+        <source>metadata.xml not found!</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MeshTreeWidgetItem</name>

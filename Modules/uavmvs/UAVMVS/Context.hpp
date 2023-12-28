@@ -17,5 +17,6 @@ void SetupMetadata(
     const boost::filesystem::path& matadataPath_);
 void HomeLayerView();
 void Destory();
+void DrawWaypoint();
 }
 }
