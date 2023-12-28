@@ -383,6 +383,10 @@
         <source>Add layer</source>
         <translation type="unfinished">加载模型</translation>
     </message>
+    <message>
+        <source>Open layer dir</source>
+        <translation type="unfinished">打开模型目录</translation>
+    </message>
 </context>
 <context>
     <name>MeshTreeWidgetItem</name>
