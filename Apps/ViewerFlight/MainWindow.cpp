@@ -123,9 +123,11 @@ void MainWindow::dropEvent(QDropEvent* event_)
 
 void MainWindow::addLayer(const QString& dir_) {
     boost::filesystem::path dir          = dir_.toLocal8Bit().constData();
+    if (uavmvs::context::ViewLoadedTile(dir)) return;
+
     boost::filesystem::path metadataPath = dir / "metadata.xml";
     if (!boost::filesystem::exists(metadataPath)) {
-        throw std::runtime_error("metadata.xml not exits!");
+        QMessageBox::warning(this, "", tr("metadata.xml not found!"));
         return;
     }
     uavmvs::context::SetupMetadata(metadataPath);

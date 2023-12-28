@@ -23,6 +23,7 @@
 #include <boost/algorithm/string.hpp>
 #include <osgGA/MultiTouchTrackballManipulator>
 #include <memory>
+#include <unordered_map>
 #include <tbb/tbb.h>
 #include "Utils/CLabelControlEventHandler.h"
 #include "Utils/Parse.h"
@@ -32,7 +33,9 @@ osgViewer::Viewer* _viewer;
 osg::ref_ptr<osg::Group>                       _root;
 osg::ref_ptr<osgEarth::Util::EarthManipulator> _cameraManipulator;
 osg::ref_ptr<osgEarth::MapNode>                _mapNode;
-std::unique_ptr<osgEarth::GeoPoint> _layerGeoPoint;
+std::shared_ptr<osgEarth::GeoPoint> _layerGeoPoint;
+std::unordered_map<std::string, std::shared_ptr<osgEarth::GeoPoint>>
+    _loadedTileGeoPoint;
 namespace uavmvs {
 namespace context {
 void Init()
@@ -101,6 +104,17 @@ void View(const osgEarth::Viewpoint& viewpoint, int delta) {
     _cameraManipulator->setViewpoint(
         viewpoint, 4);
 }
+bool ViewLoadedTile(const boost::filesystem::path& path_)
+{
+    if (_loadedTileGeoPoint.find(path_.generic_string()) == _loadedTileGeoPoint.end()) return false;
+    osgEarth::Viewpoint vp;
+    vp.focalPoint() = *_loadedTileGeoPoint[path_.generic_string()];
+    vp.setHeading(std::string("0"));
+    vp.setPitch(std::string("-45"));
+    vp.setRange(std::string("5000"));
+    View(vp, 5);
+    return true;
+}
 void AddLayer(osg::ref_ptr<osg::Group> tiles_, osg::BoundingBox bbox_) {
     osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
     xform->setTerrain(_mapNode->getTerrain());
@@ -124,11 +138,11 @@ void AddLayer(osg::ref_ptr<osg::Group> tiles_, osg::BoundingBox bbox_) {
 
     _root->addChild(xform);
 }
-void SetupMetadata(const boost::filesystem::path& matadataPath_) {
-    _layerGeoPoint.reset();
-    auto geopoint   = ParseMetaDataFile(matadataPath_);
-    _layerGeoPoint  = std::make_unique<osgEarth::GeoPoint>();
+void SetupMetadata(const boost::filesystem::path& metadataPath_) {
+    auto geopoint   = ParseMetaDataFile(metadataPath_);
+    _layerGeoPoint  = std::make_shared<osgEarth::GeoPoint>();
     *_layerGeoPoint = geopoint;
+    _loadedTileGeoPoint[metadataPath_.parent_path().generic_string()] = _layerGeoPoint;
 }
 void HomeLayerView() {
     if (_layerGeoPoint) {

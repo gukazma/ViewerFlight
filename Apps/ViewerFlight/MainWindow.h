@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QFutureWatcher>
+#include <set>
+#include <boost/filesystem/path.hpp>
 class QProgressDialog;
 namespace Ui {
 class MainWindow;
@@ -29,6 +31,7 @@ private:
     Ui::MainWindow *ui;
     QProgressDialog* m_prgDialog = nullptr;
     QFutureWatcher<void>   m_futureWather;
+    std::set<boost::filesystem::path> m_tileLoaded;
 };
 
 #endif // MAINWINDOW_H
