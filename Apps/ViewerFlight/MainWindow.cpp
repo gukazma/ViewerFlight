@@ -4,6 +4,7 @@
 #include <QRegExpValidator>
 #include <QPushButton>
 #include <QLabel>
+#include <UAVMVS/Context.hpp>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -37,9 +38,16 @@ MainWindow::MainWindow(QWidget *parent) :
     layout->addWidget(lineEdit_Latitude);
     layout->addWidget(viewButton);
     widget->setLayout(layout);
-
+    
     // 将QWidget部件添加到工具栏
     ui->toolBar->addWidget(widget);
+
+    connect(viewButton, &QPushButton::clicked, [=]() { 
+        float longitue = lineEdit_Longitude->text().toFloat();
+        float latitude = lineEdit_Latitude->text().toFloat();
+        uavmvs::context::View(osgEarth::Viewpoint("", longitue, latitude, 5000, 0, -90, 1000), 5);
+    });
+
 }
 
 MainWindow::~MainWindow()

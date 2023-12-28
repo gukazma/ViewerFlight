@@ -76,8 +76,7 @@ void Attach(osgViewer::Viewer* viewer_)
     _viewer->getCamera()->addCullCallback(new osgEarth::Util::AutoClipPlaneCullCallback(mapNode));
 }
 void View(const osgEarth::Viewpoint& viewpoint, int delta) {
-    _cameraManipulator->setViewpoint(
-        osgEarth::Viewpoint("bali", 2.2944, 48.8586, 500, 0, -90, 1000), 4);
+    _cameraManipulator->setViewpoint(viewpoint, 4);
 }
 void Destory() {
     _root.release();
