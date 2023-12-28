@@ -37,6 +37,15 @@ MainWindow::MainWindow(QWidget *parent) :
     layout->addWidget(label_Latitude);
     layout->addWidget(lineEdit_Latitude);
     layout->addWidget(viewButton);
+
+    QFrame* separator = new QFrame(this);
+    separator->setFrameShape(QFrame::VLine);
+    separator->setFrameShadow(QFrame::Sunken);
+    layout->addWidget(separator);
+
+    QPushButton* addLayerButton = new QPushButton(tr("Add layer"));
+    addLayerButton->setMaximumWidth(100);
+    layout->addWidget(addLayerButton);
     widget->setLayout(layout);
     
     // 将QWidget部件添加到工具栏
@@ -47,7 +56,6 @@ MainWindow::MainWindow(QWidget *parent) :
         float latitude = lineEdit_Latitude->text().toFloat();
         uavmvs::context::View(osgEarth::Viewpoint("", longitue, latitude, 5000, 0, -90, 1000), 5);
     });
-
 }
 
 MainWindow::~MainWindow()

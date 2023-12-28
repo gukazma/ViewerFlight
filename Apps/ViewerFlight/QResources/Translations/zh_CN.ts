@@ -379,6 +379,10 @@
         <source>Latitude</source>
         <translation type="unfinished">纬度</translation>
     </message>
+    <message>
+        <source>Add layer</source>
+        <translation type="unfinished">加载模型</translation>
+    </message>
 </context>
 <context>
     <name>MeshTreeWidgetItem</name>
