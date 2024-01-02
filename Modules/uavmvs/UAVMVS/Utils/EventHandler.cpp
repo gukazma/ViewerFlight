@@ -15,6 +15,7 @@
 #include <osgViewer/Viewer>
 #include <osg/LineWidth>
 #include <osgEarth/LineDrawable>
+#include <osgEarthDrivers/engine_rex/SurfaceNode>
 EventHandler::EventHandler(osg::ref_ptr<osg::Group>        root_,
                            osg::ref_ptr<osgEarth::MapNode> mapNode_)
     : m_root(root_)
@@ -44,12 +45,19 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 new osgUtil::IntersectionVisitor(intersector);
 
             viewer->getCamera()->accept(*visitor);
-
+            //if (dynamic_cast<osgEarth::REX::SurfaceNode>(intersector->getFirstIntersection())) {}
+            
+            osg::NodePath nodePath = intersector->getFirstIntersection().nodePath;
+            if (!nodePath.empty()) {
+                osg::Node* firstNode = nodePath.back();
+                std::string className = firstNode->className();
+                std::cout << "class name: " << className << std::endl;
+                if (className == "TileDrawable") return false;
+            }
             if (intersector->containsIntersections()) {
                 const osgUtil::LineSegmentIntersector::Intersection& intersection =
                     intersector->getFirstIntersection();
                 osg::Vec3 worldIntersectPoint    = intersection.getWorldIntersectPoint();
-                worldIntersectPoint += {0.0, 0.0, 10};
                 osg::Vec3 worldIntersectNormal   = intersection.getWorldIntersectNormal();
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal   = intersection.getLocalIntersectNormal();
