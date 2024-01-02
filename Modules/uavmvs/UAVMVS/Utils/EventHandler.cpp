@@ -20,7 +20,10 @@ EventHandler::EventHandler(osg::ref_ptr<osg::Group>        root_,
                            osg::ref_ptr<osgEarth::MapNode> mapNode_)
     : m_root(root_)
     , m_mapNode(mapNode_)
-{}
+{
+    linedrawable = new osgEarth::LineDrawable(GL_LINE_STRIP);
+    m_mapNode->addChild(linedrawable);
+}
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
@@ -52,20 +55,16 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 osgEarth::LineGroup* lineGroup = new osgEarth::LineGroup;
                 lineGroup->import(line);
                 m_mapNode->addChild(lineGroup);*/
-                osgEarth::LineDrawable* linedrawable =
-                    new osgEarth::LineDrawable(GL_LINE_STRIP);
-                linedrawable->setLineWidth(8);
                 linedrawable->setColor(osgEarth::Color::Yellow);
                 osg::ref_ptr<osg::Group>             group        = new osg::Group;
                 linedrawable->pushVertex(worldIntersectPoint);
-                linedrawable->pushVertex(worldIntersectPoint + worldIntersectNormal * 10);
+                //linedrawable->pushVertex(worldIntersectPoint + worldIntersectNormal * 10);
                 linedrawable->setLineWidth(5.0);
                 linedrawable->setStipplePattern(0xF0F0);
                 linedrawable->setStippleFactor(1);
                 linedrawable->dirty();
                 linedrawable->dirtyGLObjects();
-                group->addChild(linedrawable);
-                m_mapNode->addChild(group);
+                //group->addChild(linedrawable);
                 /*auto geode = new osg::Geode;
                 auto wire  = new osg::Geometry;
                 geode->addDrawable(wire);

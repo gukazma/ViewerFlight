@@ -4,6 +4,7 @@
 #include <osg/Group>
 #include <osgGA/GUIEventHandler>
 #include <osgEarth/MapNode>
+#include <osgEarth/LineDrawable>
 class EventHandler : public osgGA::GUIEventHandler
 {
 public:
@@ -14,4 +15,5 @@ public:
 private:
     osg::ref_ptr<osg::Group>      m_root;
     osg::ref_ptr<osgEarth::MapNode> m_mapNode;
+    osgEarth::LineDrawable*         linedrawable;
 };
