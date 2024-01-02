@@ -38,6 +38,7 @@ osg::ref_ptr<EventHandler>                     _eventHandler;
 std::shared_ptr<osgEarth::GeoPoint>                                  _layerGeoPoint;
 std::unordered_map<std::string, std::shared_ptr<osgEarth::GeoPoint>>
     _loadedTileGeoPoint;
+std::shared_ptr<osg::BoundingBox>                                    _layerBoudingBox;
 namespace uavmvs {
 namespace context {
 void Init()
@@ -104,6 +105,7 @@ void Attach(osgViewer::Viewer* viewer_)
 
     _eventHandler = new EventHandler(_root, _mapNode);
     _viewer->addEventHandler(_eventHandler);
+    _layerBoudingBox = std::make_shared<osg::BoundingBox>();
 }
 void View(const osgEarth::Viewpoint& viewpoint, int delta) {
     _cameraManipulator->setViewpoint(
@@ -121,6 +123,7 @@ bool ViewLoadedTile(const boost::filesystem::path& path_)
     return true;
 }
 void AddLayer(osg::ref_ptr<osg::Group> tiles_, osg::BoundingBox bbox_) {
+    *_layerBoudingBox = bbox_;
     osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
     xform->setTerrain(_mapNode->getTerrain());
 
@@ -144,10 +147,12 @@ void AddLayer(osg::ref_ptr<osg::Group> tiles_, osg::BoundingBox bbox_) {
 
     vp.setHeading(std::string("0"));
     vp.setPitch(std::string("-45"));
-    vp.setRange(std::string("5000"));
+    float range = _layerBoudingBox->radius() * 6;
+    vp.setRange(std::to_string(range));
     View(vp, 5);
 
     _root->addChild(xform);
+
 }
 void SetupMetadata(const boost::filesystem::path& metadataPath_) {
     auto geopoint   = ParseMetaDataFile(metadataPath_);
@@ -161,7 +166,8 @@ void HomeLayerView() {
         vp.focalPoint() = *_layerGeoPoint;
         vp.setHeading(std::string("0"));
         vp.setPitch(std::string("-45"));
-        vp.setRange(std::string("5000"));
+        float range = _layerBoudingBox->radius() * 6;
+        vp.setRange(std::to_string(range));
         View(vp, 5);
     }
 }
