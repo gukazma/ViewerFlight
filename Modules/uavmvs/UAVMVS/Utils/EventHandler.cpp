@@ -15,7 +15,6 @@
 #include <osgViewer/Viewer>
 #include <osg/LineWidth>
 #include <osgEarth/LineDrawable>
-#include "Line.h"
 EventHandler::EventHandler(osg::ref_ptr<osg::Group>        root_,
                            osg::ref_ptr<osgEarth::MapNode> mapNode_)
     : m_root(root_)
