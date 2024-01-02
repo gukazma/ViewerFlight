@@ -27,6 +27,7 @@ EventHandler::EventHandler(osg::ref_ptr<osg::Group>        root_,
     m_linedrawable->setStipplePattern(0xF0F0);
     m_linedrawable->setStippleFactor(1);
     m_linedrawable->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+    m_linedrawable->getOrCreateStateSet()->setRenderBinDetails(0, "RenderBin");
 }
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
@@ -48,6 +49,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 const osgUtil::LineSegmentIntersector::Intersection& intersection =
                     intersector->getFirstIntersection();
                 osg::Vec3 worldIntersectPoint    = intersection.getWorldIntersectPoint();
+                worldIntersectPoint += {0.0, 0.0, 10};
                 osg::Vec3 worldIntersectNormal   = intersection.getWorldIntersectNormal();
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal   = intersection.getLocalIntersectNormal();
