@@ -31,8 +31,6 @@ EventHandler::EventHandler(osg::ref_ptr<osg::Group>        root_,
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
-    std::cout << "count: " << m_linedrawable->getCount() << std::endl;
-    std::cout << "size: " << m_linedrawable->size() << std::endl;
     if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE &&
         ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && isOpen) {
         osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
@@ -110,7 +108,26 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 
 
     if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE &&
-        ea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON && isOpen) {
+        ea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON) {
+        osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
+        if (viewer) {
+            osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
+                new osgUtil::LineSegmentIntersector(
+                    osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
+            isOpen = true;
+            if (m_linedrawable->size() == 0) {
+                return false;
+            }
+            m_linedrawable->setCount(m_linedrawable->getCount()-1);
+            m_linedrawable->dirty();
+            m_linedrawable->dirtyGLObjects();
+        }
+
+        return true;
+    }
+
+    if (ea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK &&
+        ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && isOpen) {
         osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
         if (viewer) {
             osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
@@ -119,9 +136,18 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
             if (m_linedrawable->size() == 0) {
                 return false;
             }
-            m_linedrawable->setCount(m_linedrawable->getCount()-1);
+            if (m_linedrawable->size() != 1 &&
+                m_linedrawable->getCount() < m_linedrawable->size()) {
+                m_linedrawable->setVertex(m_linedrawable->getCount(), m_linedrawable->getVertex(0));
+                m_linedrawable->setCount(m_linedrawable->getCount() + 1);
+            }
+            else {
+                m_linedrawable->pushVertex(m_linedrawable->getVertex(0));
+                m_linedrawable->setCount(m_linedrawable->size());
+            }
             m_linedrawable->dirty();
             m_linedrawable->dirtyGLObjects();
+            isOpen = false;
         }
 
         return true;
