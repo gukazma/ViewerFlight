@@ -23,6 +23,11 @@ EventHandler::EventHandler(osg::ref_ptr<osg::Group>        root_,
 {
     linedrawable = new osgEarth::LineDrawable(GL_LINE_STRIP);
     m_mapNode->addChild(linedrawable);
+    linedrawable->setColor(osgEarth::Color::Yellow);
+    linedrawable->setLineWidth(5.0);
+    linedrawable->setStipplePattern(0xF0F0);
+    linedrawable->setStippleFactor(1);
+    linedrawable->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 }
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
@@ -47,47 +52,10 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 osg::Vec3 worldIntersectNormal   = intersection.getWorldIntersectNormal();
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal   = intersection.getLocalIntersectNormal();
-                /*osg::ref_ptr<Line> line                   = new Line();
-                line->push(worldIntersectPoint, {0.0f, 1.0f, 0.0f, 1.f});
-                line->push(worldIntersectPoint + worldIntersectNormal * 10,
-                           {0.0f, 1.0f, 0.0f, 1.f});
-                line->update();
-                osgEarth::LineGroup* lineGroup = new osgEarth::LineGroup;
-                lineGroup->import(line);
-                m_mapNode->addChild(lineGroup);*/
-                linedrawable->setColor(osgEarth::Color::Yellow);
-                osg::ref_ptr<osg::Group>             group        = new osg::Group;
+                
                 linedrawable->pushVertex(worldIntersectPoint);
-                //linedrawable->pushVertex(worldIntersectPoint + worldIntersectNormal * 10);
-                linedrawable->setLineWidth(5.0);
-                linedrawable->setStipplePattern(0xF0F0);
-                linedrawable->setStippleFactor(1);
                 linedrawable->dirty();
                 linedrawable->dirtyGLObjects();
-                //group->addChild(linedrawable);
-                /*auto geode = new osg::Geode;
-                auto wire  = new osg::Geometry;
-                geode->addDrawable(wire);
-
-                wire->setUseDisplayList(false);
-                wire->setName("Wire");
-
-                osg::Vec3Array* verts = new osg::Vec3Array;
-                verts->push_back(worldIntersectPoint);
-                verts->push_back(worldIntersectPoint + worldIntersectNormal*10);
-                verts->dirty();
-
-                osg::Vec4Array* clrWire = new osg::Vec4Array(2);
-                (*clrWire)[0]           = osg::Vec4f(0.0f, 1.0f, 0.0f, 1.f);
-                (*clrWire)[1]           = osg::Vec4f(0.0f, 1.0f, 0.0f, 1.f);
-                wire->addPrimitiveSet(new osg::DrawArrays(GL_LINES, 0, verts->size()));
-                wire->setVertexArray(verts);
-                wire->setColorArray(clrWire, osg::Array::BIND_PER_VERTEX);
-
-                wire->getOrCreateStateSet()->setAttribute(new osg::LineWidth(3.5f),
-                                                            osg::StateAttribute::ON);
-                m_mapNode->addChild(geode);*/
-
             }
         }
 
