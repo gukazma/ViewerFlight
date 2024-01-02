@@ -81,6 +81,13 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal  = intersection.getLocalIntersectNormal();
                 if (m_linedrawable->size() == 0) return false;
+                if (m_linedrawable->size() == 1)
+                {
+                    m_linedrawable->pushVertex(worldIntersectPoint);
+                    m_linedrawable->dirty();
+                    m_linedrawable->dirtyGLObjects();
+                    return true;
+                }
                 m_linedrawable->setVertex(m_linedrawable->getNumVerts() - 1, worldIntersectPoint);
                 m_linedrawable->dirty();
                 m_linedrawable->dirtyGLObjects();
@@ -93,5 +100,5 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 }
 
 void EventHandler::clear() {
-    
+    m_mapNode->removeChild(m_linedrawable);
 }

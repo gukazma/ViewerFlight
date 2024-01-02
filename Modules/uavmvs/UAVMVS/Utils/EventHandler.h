@@ -16,5 +16,5 @@ public:
 private:
     osg::ref_ptr<osg::Group>      m_root;
     osg::ref_ptr<osgEarth::MapNode> m_mapNode;
-    osgEarth::LineDrawable*         m_linedrawable;
+    osg::ref_ptr <osgEarth::LineDrawable> m_linedrawable;
 };
