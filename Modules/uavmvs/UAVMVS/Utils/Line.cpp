@@ -1,5 +1,6 @@
 #include "Line.h"
 #include <osg/LineWidth>
+#include <osg/LineStipple>
 Line::Line()
     : osg::Geode()
 {
@@ -15,6 +16,8 @@ Line::Line()
     m_geometry->setColorArray(m_color, osg::Array::BIND_PER_VERTEX);
     m_geometry->getOrCreateStateSet()->setAttribute(new osg::LineWidth(3.5f),
                                                     osg::StateAttribute::ON);
+    m_geometry->getOrCreateStateSet()->setAttributeAndModes(
+        new osg::LineStipple(1, 0xFF00), osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
 }
 
 void Line::push(const osg::Vec3& v_, const osg::Vec4 color_) {
