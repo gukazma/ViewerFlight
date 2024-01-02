@@ -399,6 +399,10 @@
         <source>metadata.xml not found!</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Export waypoint</source>
+        <translation type="unfinished">导出航线</translation>
+    </message>
 </context>
 <context>
     <name>MeshTreeWidgetItem</name>

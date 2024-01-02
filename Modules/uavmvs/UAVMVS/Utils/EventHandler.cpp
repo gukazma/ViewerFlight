@@ -14,6 +14,7 @@
 #include <osgUtil/LineSegmentIntersector>
 #include <osgViewer/Viewer>
 #include <osg/LineWidth>
+#include "Line.h"
 EventHandler::EventHandler(osg::ref_ptr<osg::Group>        root_,
                            osg::ref_ptr<osgEarth::MapNode> mapNode_)
     : m_root(root_)
@@ -42,8 +43,13 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 osg::Vec3 worldIntersectNormal   = intersection.getWorldIntersectNormal();
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal   = intersection.getLocalIntersectNormal();
-
-                auto geode = new osg::Geode;
+                osg::ref_ptr<Line> line                   = new Line();
+                line->push(worldIntersectPoint, {0.0f, 1.0f, 0.0f, 1.f});
+                line->push(worldIntersectPoint + worldIntersectNormal * 10,
+                           {0.0f, 1.0f, 0.0f, 1.f});
+                line->update();
+                m_mapNode->addChild(line);
+                /*auto geode = new osg::Geode;
                 auto wire  = new osg::Geometry;
                 geode->addDrawable(wire);
 
@@ -64,7 +70,8 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 
                 wire->getOrCreateStateSet()->setAttribute(new osg::LineWidth(3.5f),
                                                             osg::StateAttribute::ON);
-                m_mapNode->addChild(geode);
+                m_mapNode->addChild(geode);*/
+
             }
         }
 
