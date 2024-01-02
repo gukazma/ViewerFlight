@@ -44,14 +44,28 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 osg::Vec3 worldIntersectNormal   = intersection.getWorldIntersectNormal();
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal   = intersection.getLocalIntersectNormal();
-                osg::ref_ptr<Line> line                   = new Line();
+                /*osg::ref_ptr<Line> line                   = new Line();
                 line->push(worldIntersectPoint, {0.0f, 1.0f, 0.0f, 1.f});
                 line->push(worldIntersectPoint + worldIntersectNormal * 10,
                            {0.0f, 1.0f, 0.0f, 1.f});
                 line->update();
                 osgEarth::LineGroup* lineGroup = new osgEarth::LineGroup;
                 lineGroup->import(line);
-                m_mapNode->addChild(lineGroup);
+                m_mapNode->addChild(lineGroup);*/
+                osgEarth::LineDrawable* linedrawable =
+                    new osgEarth::LineDrawable(GL_LINE_STRIP);
+                linedrawable->setLineWidth(8);
+                linedrawable->setColor(osgEarth::Color::Yellow);
+                osg::ref_ptr<osg::Group>             group        = new osg::Group;
+                linedrawable->pushVertex(worldIntersectPoint);
+                linedrawable->pushVertex(worldIntersectPoint + worldIntersectNormal * 10);
+                linedrawable->setLineWidth(5.0);
+                linedrawable->setStipplePattern(0xF0F0);
+                linedrawable->setStippleFactor(1);
+                linedrawable->dirty();
+                linedrawable->dirtyGLObjects();
+                group->addChild(linedrawable);
+                m_mapNode->addChild(group);
                 /*auto geode = new osg::Geode;
                 auto wire  = new osg::Geometry;
                 geode->addDrawable(wire);
