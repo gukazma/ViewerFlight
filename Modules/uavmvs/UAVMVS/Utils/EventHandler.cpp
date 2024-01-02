@@ -60,5 +60,34 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 
         return true;
     }
+
+    if (ea.getEventType() == osgGA::GUIEventAdapter::MOVE && isOpen) {
+        osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
+        if (viewer) {
+            osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
+                new osgUtil::LineSegmentIntersector(
+                    osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
+
+            osg::ref_ptr<osgUtil::IntersectionVisitor> visitor =
+                new osgUtil::IntersectionVisitor(intersector);
+
+            viewer->getCamera()->accept(*visitor);
+
+            if (intersector->containsIntersections()) {
+                const osgUtil::LineSegmentIntersector::Intersection& intersection =
+                    intersector->getFirstIntersection();
+                osg::Vec3 worldIntersectPoint   = intersection.getWorldIntersectPoint();
+                osg::Vec3 worldIntersectNormal  = intersection.getWorldIntersectNormal();
+                osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
+                osg::Vec3 localIntersectNormal  = intersection.getLocalIntersectNormal();
+                if (linedrawable->size() == 0) return false;
+                linedrawable->setVertex(linedrawable->getNumVerts() - 1, worldIntersectPoint);
+                linedrawable->dirty();
+                linedrawable->dirtyGLObjects();
+            }
+        }
+
+        return true;
+    }
     return false;
 }
