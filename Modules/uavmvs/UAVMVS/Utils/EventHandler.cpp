@@ -20,13 +20,13 @@ EventHandler::EventHandler(osg::ref_ptr<osg::Group>        root_,
     : m_root(root_)
     , m_mapNode(mapNode_)
 {
-    linedrawable = new osgEarth::LineDrawable(GL_LINE_STRIP);
-    m_mapNode->addChild(linedrawable);
-    linedrawable->setColor(osgEarth::Color::Yellow);
-    linedrawable->setLineWidth(5.0);
-    linedrawable->setStipplePattern(0xF0F0);
-    linedrawable->setStippleFactor(1);
-    linedrawable->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+    m_linedrawable = new osgEarth::LineDrawable(GL_LINE_STRIP);
+    m_mapNode->addChild(m_linedrawable);
+    m_linedrawable->setColor(osgEarth::Color::Yellow);
+    m_linedrawable->setLineWidth(5.0);
+    m_linedrawable->setStipplePattern(0xF0F0);
+    m_linedrawable->setStippleFactor(1);
+    m_linedrawable->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 }
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
@@ -52,9 +52,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal   = intersection.getLocalIntersectNormal();
                 
-                linedrawable->pushVertex(worldIntersectPoint);
-                linedrawable->dirty();
-                linedrawable->dirtyGLObjects();
+                m_linedrawable->pushVertex(worldIntersectPoint);
+                m_linedrawable->dirty();
+                m_linedrawable->dirtyGLObjects();
             }
         }
 
@@ -80,14 +80,18 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 osg::Vec3 worldIntersectNormal  = intersection.getWorldIntersectNormal();
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal  = intersection.getLocalIntersectNormal();
-                if (linedrawable->size() == 0) return false;
-                linedrawable->setVertex(linedrawable->getNumVerts() - 1, worldIntersectPoint);
-                linedrawable->dirty();
-                linedrawable->dirtyGLObjects();
+                if (m_linedrawable->size() == 0) return false;
+                m_linedrawable->setVertex(m_linedrawable->getNumVerts() - 1, worldIntersectPoint);
+                m_linedrawable->dirty();
+                m_linedrawable->dirtyGLObjects();
             }
         }
 
         return true;
     }
     return false;
+}
+
+void EventHandler::clear() {
+    
 }
