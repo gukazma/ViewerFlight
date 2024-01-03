@@ -60,14 +60,17 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
     QPushButton* addLayerButton = new QPushButton(tr("Add layer"));
     QPushButton* homeLayerButton = new QPushButton(tr("Home layer"));
     QPushButton* drawRangeButton = new QPushButton(tr("Draw range"));
+    QPushButton* generateProxyMeshButton = new QPushButton(tr("Proxy mesh"));
     QPushButton* exportWaypointButton = new QPushButton(tr("Export waypoint"));
     addLayerButton->setMaximumWidth(100);
     homeLayerButton->setMaximumWidth(130);
     drawRangeButton->setMaximumWidth(130);
     exportWaypointButton->setMaximumWidth(130);
+    generateProxyMeshButton->setMaximumWidth(130);
     layout->addWidget(addLayerButton);
     layout->addWidget(homeLayerButton);
     layout->addWidget(drawRangeButton);
+    layout->addWidget(generateProxyMeshButton);
     layout->addWidget(exportWaypointButton);
 
     widget->setLayout(layout);

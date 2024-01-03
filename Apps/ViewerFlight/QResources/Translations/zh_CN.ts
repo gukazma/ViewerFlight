@@ -407,6 +407,10 @@
         <source>Draw range</source>
         <translation type="unfinished">绘制范围</translation>
     </message>
+    <message>
+        <source>Proxy mesh</source>
+        <translation type="unfinished">生成代理模型</translation>
+    </message>
 </context>
 <context>
     <name>MeshTreeWidgetItem</name>
