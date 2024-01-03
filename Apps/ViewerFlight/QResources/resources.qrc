@@ -2,5 +2,7 @@
   <qresource prefix="/">
     <file>Translations/zh_CN.qm</file>
     <file>splashScreen.png</file>
+    <file>Icons/View.png</file>
+    <file>style.qss</file>
   </qresource>
 </RCC>

@@ -4,6 +4,7 @@
 #include <QRegExpValidator>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QToolButton>
 #include <QDragEnterEvent>
 #include <QLabel>
 #include <QMimeData>
@@ -37,8 +38,12 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
     lineEdit_Latitude->setText("31.16");
     
 
-    QPushButton* viewButton = new QPushButton(tr ("View"), this);
+    QPushButton* viewButton = new QPushButton(this);
+    QIcon        icon(":/Icons/View.png");
+    viewButton->setIcon(icon);
     viewButton->setMaximumWidth(50);
+
+
     QWidget*     widget   = new QWidget(this);
     QHBoxLayout* layout   = new QHBoxLayout(widget);
     layout->setAlignment(Qt::AlignLeft);
@@ -51,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
     layout->addWidget(label_Latitude);
     layout->addWidget(lineEdit_Latitude);
     layout->addWidget(viewButton);
+
+    
 
     QFrame* separator = new QFrame(this);
     separator->setFrameShape(QFrame::VLine);
