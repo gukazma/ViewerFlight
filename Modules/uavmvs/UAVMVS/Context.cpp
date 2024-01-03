@@ -163,7 +163,12 @@ void SetupMetadata(const boost::filesystem::path& metadataPath_) {
 void HomeLayerView() {
     if (_layerGeoPoint) {
         osgEarth::Viewpoint vp;
-        vp.focalPoint() = *_layerGeoPoint;
+        osgEarth::ElevationQuery elevationQuery(_mapNode->getMap());
+        double                   elevation = 0.0;
+        elevationQuery.getElevation(*_layerGeoPoint, elevation);
+        auto geopoint = *_layerGeoPoint;
+        geopoint.z()  = elevation - _layerBoudingBox->zMin();
+        vp.focalPoint() = geopoint;
         vp.setHeading(std::string("0"));
         vp.setPitch(std::string("-45"));
         float range = _layerBoudingBox->radius() * 6;
