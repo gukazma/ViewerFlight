@@ -1,53 +1,16 @@
-QPushButton
-{
-    background: rgb(76,131,215);
-    color: rgb(255, 255, 255);
-    width: 75px;
-    height: 25px;
-    border-radius:4px;
-}
-QPushButton:hover
-{
-    background:#1a9b81;
-    color: rgb(220, 220, 220);
-    width: 75px;
-    height: 25px;
-    border-radius:4px;
-}
 /*工具按钮*/
 QToolButton
 {
     border:none;
-    color:rgb(200,200,200);
-    background-color:rgba(120,127,131,0);
-    width:95px;
-    height:25px;
-}
-QToolButton:!enabled{
-    color: rgb(80,80,80);
-
-}
-
-QToolButton:checked
-{
-    border:1px solid #607D8B;
-    color:rgb(73,169,238);
-    background-color:#546E7A;
 }
 
 QToolButton:hover
 {
     color:white;
-    border:1px solid #78909C;
-    background-color:#757575;
+    border:1px solid #ffffff;
+    background-color:#ffffff;
 }
 
-QToolButton:pressed
-{
-    border:1px solid #607D8B;
-    color:rgb(73,169,238);
-    background-color:#546E7A;
-}
 QToolButton::menu-button
 {
     background-color:transparent;

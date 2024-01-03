@@ -38,11 +38,10 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
     lineEdit_Latitude->setText("31.16");
     
 
-    QPushButton* viewButton = new QPushButton(this);
+    QToolButton* viewButton = new QToolButton(this);
     QIcon        icon(":/Icons/View.png");
     viewButton->setIcon(icon);
     viewButton->setMaximumWidth(50);
-
 
     QWidget*     widget   = new QWidget(this);
     QHBoxLayout* layout   = new QHBoxLayout(widget);
