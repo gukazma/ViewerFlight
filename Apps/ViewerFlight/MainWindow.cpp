@@ -127,6 +127,11 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event_) {
     event_->ignore();
 }
 
+void MainWindow::resizeEvent(QResizeEvent* event) {
+    QWidget::resizeEvent(event);
+    emit ui->osgviewer->resized();
+}
+
 void MainWindow::dropEvent(QDropEvent* event_)
 {
     const QUrl    url        = event_->mimeData()->urls().at(0);

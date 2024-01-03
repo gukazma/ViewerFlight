@@ -20,7 +20,7 @@ public:
 
 protected:
     void dragEnterEvent(QDragEnterEvent* event_) override;
-
+    virtual void resizeEvent(QResizeEvent* event) override;
     void dropEvent(QDropEvent* event_) override;
 
     void addLayer(const QString& dir_);

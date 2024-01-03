@@ -181,6 +181,11 @@ void Destory() {
     /*_root.release();
     _cameraManipulator.release();*/
 }
+void Resize(double width_, double height_) {
+    if (!_viewer) return;
+    osg::ref_ptr<osg::Camera> spCamera = _viewer->getCamera();
+    spCamera->setProjectionMatrixAsPerspective(30.0, width_ / height_, 1.0, 10000);
+}
 void DrawRange()
 {
     _eventHandler->isOpen = true;

@@ -25,6 +25,9 @@ OSGViewerWidget::OSGViewerWidget(QWidget* parent) {
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
     connect(this, &osgQOpenGLWidget::initialized, this, &OSGViewerWidget::init);
+    connect(this, &osgQOpenGLWidget::resized, [&] {
+                uavmvs::context::Resize(this->width(), this->height());
+        });
 }
 
 OSGViewerWidget::~OSGViewerWidget() {

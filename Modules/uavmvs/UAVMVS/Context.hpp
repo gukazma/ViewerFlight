@@ -17,6 +17,7 @@ void SetupMetadata(
     const boost::filesystem::path& matadataPath_);
 void HomeLayerView();
 void Destory();
+void Resize(double width_, double height_);
 void DrawRange();
 void GenerateProxyMesh();
 }
