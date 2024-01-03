@@ -8,7 +8,7 @@ find_package(LibKML REQUIRED)
 find_package(Boost REQUIRED)
 find_package(Qt5 COMPONENTS Core Widgets Gui OpenGL CONFIG REQUIRED)
 find_package(TBB REQUIRED)
-
+find_package(vcglib REQUIRED)
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${HEADER_FILES} ${HPP_FILES} ${CPP_FILES})
 
 add_library(${TARGET_NAME} ${HEADER_FILES} ${CPP_FILES} ${HEADER_FILES} ${HPP_FILES})
@@ -18,7 +18,6 @@ set_target_properties(${TARGET_NAME} PROPERTIES CXX_STANDARD 17)
 set_target_properties(${TARGET_NAME} PROPERTIES FOLDER Modules)
 
 # being a cross-platform target, we enforce standards conformance on MSVC
-target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
 target_compile_options(${TARGET_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/WX->")
 
 # Link dependencies    
@@ -32,6 +31,7 @@ Boost::thread
 CONAN_PKG::osgearth
 TBB::TBB
 kmlbase kmlconvenience kmldom kmlengine
+vcglib::vcglib
           )
 
 target_include_directories(

@@ -40,4 +40,5 @@ void OSGViewerWidget::home() {
 void OSGViewerWidget::init()
 {
     uavmvs::context::Attach(getOsgViewer());
+    osg::setNotifyLevel(osg::FATAL);
 }

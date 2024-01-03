@@ -1,4 +1,5 @@
 #include <osg/NodeVisitor>
+#include <vector>
 
 class DrawableVistor : public osg::NodeVisitor
 {
@@ -8,6 +9,5 @@ public:
 
     void apply(osg::Geometry& geometry_) override;
 
-    osg::ref_ptr<osg::Group> m_geodes;
-    osg::ref_ptr<osg::Group> m_geodesRange;
+    std::vector<osg::Geometry*> m_geoms;
 };

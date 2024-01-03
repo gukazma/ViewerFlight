@@ -30,6 +30,8 @@
 #include "Utils/HUDAxis.h"
 #include "Utils/EventHandler.h"
 #include "Utils/DrawableVisitor.h"
+#include "UAVMVS/Mesh/Mesh.h"
+
 osgViewer::Viewer* _viewer;
 osg::ref_ptr<osg::Group>                       _root;
 osg::ref_ptr<osg::Group>                                             _currentTile;
@@ -194,6 +196,7 @@ void GenerateProxyMesh() {
     if (_currentTile) {
         DrawableVistor visitor;
         _currentTile->accept(visitor);
+        uavmvs::mesh::PossionDisk(visitor.m_geoms);
     }
 }
 }   // namespace context
