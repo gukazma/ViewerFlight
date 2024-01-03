@@ -5,6 +5,7 @@
 #include <osgGA/GUIEventHandler>
 #include <osgEarth/MapNode>
 #include <osgEarth/LineDrawable>
+#include <vector>
 class EventHandler : public osgGA::GUIEventHandler
 {
 public:
@@ -17,4 +18,5 @@ private:
     osg::ref_ptr<osg::Group>      m_root;
     osg::ref_ptr<osgEarth::MapNode> m_mapNode;
     osg::ref_ptr <osgEarth::LineDrawable> m_linedrawable;
+    std::vector<osg::Vec3>                m_rangeStack;
 };

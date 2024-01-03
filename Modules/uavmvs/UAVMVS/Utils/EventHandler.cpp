@@ -52,6 +52,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 m_linedrawable->pushVertex(m_linedrawable->getVertex(0));
                 m_linedrawable->setCount(m_linedrawable->size());
             }
+            m_rangeStack.push_back(m_rangeStack[0]);
             m_linedrawable->dirty();
             m_linedrawable->dirtyGLObjects();
             isOpen = false;
@@ -97,6 +98,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                     m_linedrawable->pushVertex(worldIntersectPoint);
                     m_linedrawable->setCount(m_linedrawable->size());
                 }
+                m_rangeStack.push_back(loclIntersectionPoint);
                 m_linedrawable->dirty();
                 m_linedrawable->dirtyGLObjects();
             }
@@ -113,13 +115,18 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 new osgUtil::LineSegmentIntersector(
                     osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
             int count = m_linedrawable->getCount() - 1 < 0 ? 0 : m_linedrawable->getCount() - 1;
+            if (!isOpen) {
+                isOpen = true;
+            }
             if (count <= 2) {
-                m_linedrawable->setCount(1);
+                m_linedrawable->setCount(0);
                 m_linedrawable->clear();
+                m_rangeStack.clear();
                 isOpen = false;
             }
             else {
                 m_linedrawable->setCount(count);
+                m_rangeStack.pop_back();
             }
             m_linedrawable->dirty();
             m_linedrawable->dirtyGLObjects();
