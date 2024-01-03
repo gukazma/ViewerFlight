@@ -94,7 +94,9 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
         uavmvs::context::HomeLayerView();
     });
 
-    connect(drawRangeButton, &QPushButton::clicked, [=]() { uavmvs::context::DrawWaypoint(); });
+    connect(drawRangeButton, &QPushButton::clicked, [=]() { uavmvs::context::DrawRange(); });
+    connect(
+        generateProxyMeshButton, &QPushButton::clicked, [=]() { uavmvs::context::GenerateProxyMesh(); });
 
     connect(addLayerButton, &QPushButton::clicked, [=]() {
         auto layerDir = QFileDialog::getExistingDirectory(nullptr, tr("Open layer dir"));

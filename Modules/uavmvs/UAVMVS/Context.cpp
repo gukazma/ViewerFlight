@@ -29,9 +29,10 @@
 #include "Utils/Parse.h"
 #include "Utils/HUDAxis.h"
 #include "Utils/EventHandler.h"
-
+#include "Utils/DrawableVisitor.h"
 osgViewer::Viewer* _viewer;
 osg::ref_ptr<osg::Group>                       _root;
+osg::ref_ptr<osg::Group>                                             _currentTile;
 osg::ref_ptr<osgEarth::Util::EarthManipulator> _cameraManipulator;
 osg::ref_ptr<osgEarth::MapNode>                _mapNode;
 osg::ref_ptr<EventHandler>                     _eventHandler;
@@ -150,7 +151,7 @@ void AddLayer(osg::ref_ptr<osg::Group> tiles_, osg::BoundingBox bbox_) {
     float range = _layerBoudingBox->radius() * 6;
     vp.setRange(std::to_string(range));
     View(vp, 5);
-
+    _currentTile = tiles_;
     _root->addChild(xform);
 
 }
@@ -180,8 +181,15 @@ void Destory() {
     /*_root.release();
     _cameraManipulator.release();*/
 }
-void DrawWaypoint() {
+void DrawRange()
+{
     _eventHandler->isOpen = true;
+}
+void GenerateProxyMesh() {
+    if (_currentTile) {
+        DrawableVistor visitor;
+        _currentTile->accept(visitor);
+    }
 }
 }   // namespace context
 }   // namespace uavmvs
