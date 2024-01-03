@@ -59,15 +59,15 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
 
     QPushButton* addLayerButton = new QPushButton(tr("Add layer"));
     QPushButton* homeLayerButton = new QPushButton(tr("Home layer"));
-    QPushButton* drawWaypointButton = new QPushButton(tr("Draw waypoint"));
+    QPushButton* drawRangeButton = new QPushButton(tr("Draw range"));
     QPushButton* exportWaypointButton = new QPushButton(tr("Export waypoint"));
     addLayerButton->setMaximumWidth(100);
     homeLayerButton->setMaximumWidth(130);
-    drawWaypointButton->setMaximumWidth(130);
+    drawRangeButton->setMaximumWidth(130);
     exportWaypointButton->setMaximumWidth(130);
     layout->addWidget(addLayerButton);
     layout->addWidget(homeLayerButton);
-    layout->addWidget(drawWaypointButton);
+    layout->addWidget(drawRangeButton);
     layout->addWidget(exportWaypointButton);
 
     widget->setLayout(layout);
@@ -85,7 +85,7 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
         uavmvs::context::HomeLayerView();
     });
 
-    connect(drawWaypointButton, &QPushButton::clicked, [=]() { uavmvs::context::DrawWaypoint(); });
+    connect(drawRangeButton, &QPushButton::clicked, [=]() { uavmvs::context::DrawWaypoint(); });
 
     connect(addLayerButton, &QPushButton::clicked, [=]() {
         auto layerDir = QFileDialog::getExistingDirectory(nullptr, tr("Open layer dir"));

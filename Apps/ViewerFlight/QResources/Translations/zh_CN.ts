@@ -393,7 +393,7 @@
     </message>
     <message>
         <source>Draw waypoint</source>
-        <translation type="unfinished">绘制航点</translation>
+        <translation type="obsolete">绘制航点</translation>
     </message>
     <message>
         <source>metadata.xml not found!</source>
@@ -402,6 +402,10 @@
     <message>
         <source>Export waypoint</source>
         <translation type="unfinished">导出航线</translation>
+    </message>
+    <message>
+        <source>Draw range</source>
+        <translation type="unfinished">绘制范围</translation>
     </message>
 </context>
 <context>

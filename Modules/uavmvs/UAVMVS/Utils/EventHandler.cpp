@@ -33,6 +33,33 @@ EventHandler::EventHandler(osg::ref_ptr<osg::Group>        root_,
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
+    if (ea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK &&
+        ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && isOpen) {
+        osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
+        if (viewer) {
+            osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
+                new osgUtil::LineSegmentIntersector(
+                    osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
+            if (m_linedrawable->size() == 0) {
+                return false;
+            }
+            if (m_linedrawable->size() != 1 &&
+                m_linedrawable->getCount() < m_linedrawable->size()) {
+                m_linedrawable->setVertex(m_linedrawable->getCount(), m_linedrawable->getVertex(0));
+                m_linedrawable->setCount(m_linedrawable->getCount() + 1);
+            }
+            else {
+                m_linedrawable->pushVertex(m_linedrawable->getVertex(0));
+                m_linedrawable->setCount(m_linedrawable->size());
+            }
+            m_linedrawable->dirty();
+            m_linedrawable->dirtyGLObjects();
+            isOpen = false;
+        }
+
+        return true;
+    }
+
     if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE &&
         ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && isOpen) {
         osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
@@ -61,7 +88,8 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 osg::Vec3 worldIntersectNormal   = intersection.getWorldIntersectNormal();
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal   = intersection.getLocalIntersectNormal();
-                if (m_linedrawable->size()!=1 &&m_linedrawable->getCount() < m_linedrawable->size()) {
+                if (m_linedrawable->size() != 1 &&
+                    m_linedrawable->getCount() < m_linedrawable->size()) {
                     m_linedrawable->setVertex(m_linedrawable->getCount(), worldIntersectPoint);
                     m_linedrawable->setCount(m_linedrawable->getCount() + 1);
                 }
@@ -76,6 +104,30 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
 
         return true;
     }
+
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE &&
+        ea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON) {
+        osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
+        if (viewer) {
+            osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
+                new osgUtil::LineSegmentIntersector(
+                    osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
+            int count = m_linedrawable->getCount() - 1 < 0 ? 0 : m_linedrawable->getCount() - 1;
+            if (count <= 2) {
+                m_linedrawable->setCount(1);
+                m_linedrawable->clear();
+                isOpen = false;
+            }
+            else {
+                m_linedrawable->setCount(count);
+            }
+            m_linedrawable->dirty();
+            m_linedrawable->dirtyGLObjects();
+        }
+
+        return true;
+    }
+
 
     if (ea.getEventType() == osgGA::GUIEventAdapter::MOVE && isOpen) {
         osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
@@ -98,7 +150,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 osg::Vec3 worldIntersectNormal  = intersection.getWorldIntersectNormal();
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal  = intersection.getLocalIntersectNormal();
-                if (m_linedrawable->size() == 0) return false;
+                if (m_linedrawable->size() == 0 || m_linedrawable->getCount()==0) return false;
                 if (m_linedrawable->getCount() == 1)
                 {
                     m_linedrawable->pushVertex(worldIntersectPoint);
@@ -117,51 +169,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
     }
 
 
-    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE &&
-        ea.getButton() == osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON) {
-        osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
-        if (viewer) {
-            osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
-                new osgUtil::LineSegmentIntersector(
-                    osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
-            isOpen = true;
-            if (m_linedrawable->size() == 0) {
-                return false;
-            }
-            m_linedrawable->setCount(m_linedrawable->getCount()-1);
-            m_linedrawable->dirty();
-            m_linedrawable->dirtyGLObjects();
-        }
+    
 
-        return true;
-    }
-
-    if (ea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK &&
-        ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && isOpen) {
-        osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
-        if (viewer) {
-            osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
-                new osgUtil::LineSegmentIntersector(
-                    osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
-            if (m_linedrawable->size() == 0) {
-                return false;
-            }
-            if (m_linedrawable->size() != 1 &&
-                m_linedrawable->getCount() < m_linedrawable->size()) {
-                m_linedrawable->setVertex(m_linedrawable->getCount(), m_linedrawable->getVertex(0));
-                m_linedrawable->setCount(m_linedrawable->getCount() + 1);
-            }
-            else {
-                m_linedrawable->pushVertex(m_linedrawable->getVertex(0));
-                m_linedrawable->setCount(m_linedrawable->size());
-            }
-            m_linedrawable->dirty();
-            m_linedrawable->dirtyGLObjects();
-            isOpen = false;
-        }
-
-        return true;
-    }
+    
     return false;
 }
 
