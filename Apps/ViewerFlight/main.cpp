@@ -16,11 +16,11 @@ int main(int argc, char** argv)
     translator->load(":/Translations/zh_CN.qm");
     app.installTranslator(translator);
 
-    QFile styleFile(":/style.qss");
+    /*QFile styleFile(":/style.qss");
     if (styleFile.open(QFile::ReadOnly)) {
         QString styleSheet = QLatin1String(styleFile.readAll());
         app.setStyleSheet(styleSheet);
-    }
+    }*/
 
     MainWindow mainwindow;
     mainwindow.showMaximized();
