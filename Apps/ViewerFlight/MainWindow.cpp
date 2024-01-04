@@ -70,6 +70,8 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
             uavmvs::context::View(osgEarth::Viewpoint("", longitue, latitude, 5000, 0, -90, 1000),
             5);
         });
+
+    connect(ui->actionDrawRange, &QAction::triggered, [=]() { uavmvs::context::DrawRange(); });
     //QToolButton* viewButton = new QToolButton(this);
     //QIcon        icon(":/Icons/View.png");
     //viewButton->setIcon(icon);

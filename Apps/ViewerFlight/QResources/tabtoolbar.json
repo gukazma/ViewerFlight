@@ -11,7 +11,20 @@
     {
       "displayName":"航线规划",
       "name":"UAVMVS",
-      "groups":[]
+      "groups":[
+        {
+          "displayName": "预处理",
+          "name":"Preprocess",
+          "content":[
+            {
+              "itemType":"action",
+              "type":"delayedPopup",
+              "name":"actionDrawRange"
+            }
+          ]
+        }
+
+      ]
     },
     {
       "displayName":"显示",

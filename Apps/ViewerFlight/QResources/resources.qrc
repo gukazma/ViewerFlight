@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>Icons/floor_plan_30px.png</file>
     <file>Translations/zh_CN.qm</file>
     <file>splashScreen.png</file>
     <file>Icons/View.png</file>
@@ -7,7 +8,7 @@
     <file>style.qss</file>
   </qresource>
   <qresource prefix="/tt">
-        <file>StyleTemplate.qss</file>
-        <file>tabtoolbar.json</file>
-    </qresource>
+    <file>StyleTemplate.qss</file>
+    <file>tabtoolbar.json</file>
+  </qresource>
 </RCC>

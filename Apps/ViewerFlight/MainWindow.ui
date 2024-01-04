@@ -40,6 +40,15 @@
     <string>定位</string>
    </property>
   </action>
+  <action name="actionDrawRange">
+   <property name="icon">
+    <iconset resource="QResources/resources.qrc">
+     <normaloff>:/Icons/floor_plan_30px.png</normaloff>:/Icons/floor_plan_30px.png</iconset>
+   </property>
+   <property name="text">
+    <string>选择范围</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
