@@ -32,6 +32,7 @@
 #include "Utils/EventHandler.h"
 #include "Utils/DrawableVisitor.h"
 #include "UAVMVS/Mesh/Mesh.h"
+#include <osgEarth/PointDrawable>
 
 osgViewer::Viewer* _viewer;
 osg::ref_ptr<osg::Group>                       _root;
@@ -209,6 +210,7 @@ void GenerateProxyMesh() {
             osgEarth::Viewpoint vp;
             vp.focalPoint() = geopoint;
             xform->setPosition(geopoint);
+            osgEarth::Registry::shaderGenerator().run(points);
             xform->addChild(points);
             _root->addChild(xform);
         }

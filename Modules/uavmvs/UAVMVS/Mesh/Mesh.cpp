@@ -13,6 +13,8 @@
 #include <osg/Geode>
 #include <osg/Point>
 #include <osgEarth/PointDrawable>
+#include <osg/Shape>
+#include <osg/ShapeDrawable>
 class MyVertex;
 class MyEdge;
 class MyFace;
@@ -174,43 +176,22 @@ osg::ref_ptr<osg::Geode> PossionDisk(std::vector<osg::Geometry*>& geometries) {
 
     vcg::tri::UpdateNormal<MyMesh>::NormalizePerVertex(PoissonMesh);
 
-     // 创建顶点数组
-    osg::ref_ptr<osg::Vec3Array> coords = new osg::Vec3Array();
-    // 创建颜色
-    osg::ref_ptr<osg::Vec4Array> color = new osg::Vec4Array();
-    // 创建几何体
-    osg::ref_ptr<osg::Geometry> geometry = new osg::Geometry();
-    // 设置顶点数组
-    geometry->setVertexArray(coords.get());
-    geometry->setColorArray(color.get());
-    geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-
-    osg::Vec3Array* normals = new osg::Vec3Array;
-    normals->push_back(osg::Vec3(0.0f, 1.0f, 0.0f));
-    // geometry->setNormalArray(normals);
-    // geometry->setNormalBinding(osg::Geometry::BIND_OVERALL);
     // 设置关联方式
-    for (size_t i = 0; i < PoissonMesh.vert.size(); i++) {
-        coords->push_back(
-            {PoissonMesh.vert[i].P()[0], PoissonMesh.vert[i].P()[1], PoissonMesh.vert[i].P()[2]});
-        color->push_back({0.0, 1.0, 0.0, 1.0f});
-    }
-    geometry->addPrimitiveSet(
-        new osg::DrawArrays(osg::PrimitiveSet::POINTS, 0, PoissonMesh.vert.size()));
-    // 创建一个点属性对象
-    osg::ref_ptr<osg::Point> point = new osg::Point();
-
-    // 设置点的大小
-    point->setSize(100000.0f);
-    point->setMinSize(1000.0f);
-    // 将点属性对象添加到Geometry节点中
-    geometry->getOrCreateStateSet()->setAttributeAndModes(point.get(), osg::StateAttribute::ON);
-    // 添加到叶节点
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
-    geode->addDrawable(geometry.get());
-    vcg::tri::io::ExporterPLY<MyMesh>::Save(
-        PoissonMesh, "D:/PoissonMesh.ply", vcg::tri::io::Mask::IOM_VERTNORMAL);
-    
+    for (size_t i = 0; i < PoissonMesh.vert.size(); i++) {
+        osg::ref_ptr<osg::Sphere> sphere = new osg::Sphere(
+            {PoissonMesh.vert[i].P()[0], PoissonMesh.vert[i].P()[1], PoissonMesh.vert[i].P()[2]},
+            2.0f);
+        osg::ref_ptr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(sphere);
+
+        // 设置球体的颜色
+        osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+        colors->push_back(osg::Vec4(0.0f, 1.0f, 0.0f, 1.0f));   // 红色
+        shapeDrawable->setColorArray(colors);
+        shapeDrawable->setColorBinding(osg::Geometry::BIND_OVERALL);
+        geode->addDrawable(shapeDrawable);
+    }
+
     return geode;
 }
 }
