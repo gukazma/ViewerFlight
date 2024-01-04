@@ -196,7 +196,21 @@ void GenerateProxyMesh() {
     if (_currentTile) {
         DrawableVistor visitor;
         _currentTile->accept(visitor);
-        uavmvs::mesh::PossionDisk(visitor.m_geoms);
+        auto points =  uavmvs::mesh::PossionDisk(visitor.m_geoms);
+        if (points) {
+            osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
+            xform->setTerrain(_mapNode->getTerrain());
+            // 查询海拔高度
+            osgEarth::ElevationQuery elevationQuery(_mapNode->getMap());
+            double                   elevation = 0.0;
+            elevationQuery.getElevation(*_layerGeoPoint, elevation);
+            auto geopoint = *_layerGeoPoint;
+            osgEarth::Viewpoint vp;
+            vp.focalPoint() = geopoint;
+            xform->setPosition(geopoint);
+            xform->addChild(points);
+            _root->addChild(xform);
+        }
     }
 }
 }   // namespace context

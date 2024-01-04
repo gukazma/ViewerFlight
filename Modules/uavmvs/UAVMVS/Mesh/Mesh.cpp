@@ -4,6 +4,8 @@
 #include <vcg/complex/algorithms/local_optimization/tri_edge_collapse_quadric.h>
 #include <vcg/complex/algorithms/update/color.h>
 #include <vcg/complex/complex.h>
+#include<vcg/complex/algorithms/point_sampling.h>
+#include<vcg/complex/algorithms/voronoi_processing.h>
 #include <wrap/io_trimesh/export_off.h>
 #include <wrap/io_trimesh/export_ply.h>
 #include <wrap/io_trimesh/import.h>
@@ -144,7 +146,34 @@ osg::ref_ptr<osg::Geode> PossionDisk(std::vector<osg::Geometry*>& geometries) {
         OSG2Mesh(geom, submesh);
         vcg::tri::Append<MyMesh, MyMesh>::Mesh(mesh, submesh);
     }
-    vcg::tri::io::ExporterPLY<MyMesh>::Save(mesh, "D:/output.ply");
+    vcg::tri::UpdateBounding<MyMesh>::Box(mesh);
+    vcg::tri::Clean<MyMesh>::RemoveUnreferencedVertex(mesh);
+    vcg::tri::Allocator<MyMesh>::CompactEveryVector(mesh);
+    vcg::tri::UpdateTopology<MyMesh>::VertexFace(mesh);
+
+    vcg::tri::SurfaceSampling<MyMesh, vcg::tri::TrivialPointerSampler<MyMesh>>::PoissonDiskParam pp;
+    vcg::tri::UpdateFlags<MyMesh>::FaceBorderFromVF(mesh);
+    vcg::tri::UpdateFlags<MyMesh>::VertexBorderFromFaceBorder(mesh);
+    vcg::tri::UpdateNormal<MyMesh>::PerFace(mesh);
+    vcg::tri::UpdateNormal<MyMesh>::PerVertex(mesh);
+
+    vcg::tri::TrivialPointerSampler<MyMesh> mps;
+    vcg::tri::SurfaceSampling<MyMesh, vcg::tri::TrivialPointerSampler<MyMesh>>::PoissonDiskPruning(
+        mps, mesh, 10, pp);
+    MyMesh PoissonMesh;
+    vcg::tri::RequirePerVertexNormal<MyMesh>(PoissonMesh);
+
+    vcg::tri::Allocator<MyMesh>::AddVertices(PoissonMesh, mps.sampleVec.size());
+
+    for (size_t i = 0; i < mps.sampleVec.size(); ++i) {
+        PoissonMesh.vert[i].P() = mps.sampleVec[i]->cP();
+        PoissonMesh.vert[i].N() = mps.sampleVec[i]->cN();
+    }
+
+    vcg::tri::UpdateNormal<MyMesh>::NormalizePerVertex(PoissonMesh);
+    vcg::tri::io::ExporterPLY<MyMesh>::Save(
+        PoissonMesh, "D:/PoissonMesh.ply", vcg::tri::io::Mask::IOM_VERTNORMAL);
+
     return nullptr;
 }
 }
