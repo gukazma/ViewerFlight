@@ -181,7 +181,7 @@ osg::ref_ptr<osg::Geode> PossionDisk(std::vector<osg::Geometry*>& geometries) {
     for (size_t i = 0; i < PoissonMesh.vert.size(); i++) {
         osg::ref_ptr<osg::Sphere> sphere = new osg::Sphere(
             {PoissonMesh.vert[i].P()[0], PoissonMesh.vert[i].P()[1], PoissonMesh.vert[i].P()[2]},
-            2.0f);
+            1.0f);
         osg::ref_ptr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(sphere);
 
         // 设置球体的颜色
