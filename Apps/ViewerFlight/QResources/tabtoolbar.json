@@ -18,16 +18,24 @@
       "name":"View",
       "groups":[
         {
-          "displayName":"",
+          "displayName":"定位",
           "name":"Group 1",
+          "aligned":true,
           "content":[
             {
-              "itemType":"lineEdit",
-              "name":"lineEdit_Longitude"
-            },
-            {
-              "itemType":"lineEdit",
-              "name":"lineEdit_Latitude"
+              "itemType":"subgroup",
+              "name":"group2Subgroup",
+              "aligned":true,
+              "content":[
+                {
+                  "itemType":"lineEdit",
+                  "name":"lineEdit_Longitude"
+                },
+                {
+                  "itemType":"lineEdit",
+                  "name":"lineEdit_Latitude"
+                }
+              ]
             },
             {
               "itemType":"action",
