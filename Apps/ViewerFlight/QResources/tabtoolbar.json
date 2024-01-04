@@ -16,7 +16,27 @@
     {
       "displayName":"显示",
       "name":"View",
-      "groups":[]
+      "groups":[
+        {
+          "displayName":"",
+          "name":"Group 1",
+          "content":[
+            {
+              "itemType":"lineEdit",
+              "name":"lineEdit_Longitude"
+            },
+            {
+              "itemType":"lineEdit",
+              "name":"lineEdit_Latitude"
+            },
+            {
+              "itemType":"action",
+              "type":"menuButtonPopup",
+              "name":"actionView"
+            }
+          ]
+        }
+      ]
     },
     {
       "displayName":"编辑",

@@ -31,9 +31,13 @@
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionHome">
+  <action name="actionView">
+   <property name="icon">
+    <iconset resource="QResources/resources.qrc">
+     <normaloff>:/Icons/geo-fence_30px.png</normaloff>:/Icons/geo-fence_30px.png</iconset>
+   </property>
    <property name="text">
-    <string>视角重置</string>
+    <string>定位</string>
    </property>
   </action>
  </widget>
@@ -45,6 +49,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="QResources/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -40,6 +40,8 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
 
     setAcceptDrops(true);
     tt::Builder ttb(this);
+    ttb.SetCustomWidgetCreator("lineEdit", []() { return new QLineEdit(); });
+
     tt::TabToolbar* tabToolbar = ttb.CreateTabToolbar(":/tt/tabtoolbar.json");
     addToolBar(Qt::TopToolBarArea, tabToolbar);
     QObject::connect(tabToolbar, &tt::TabToolbar::SpecialTabClicked, this, [this]() {
@@ -53,20 +55,21 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
             }
         }
     });
-    
-    //// ¾­¶È
-    //QLineEdit* lineEdit_Longitude = new QLineEdit(this);
-    //lineEdit_Longitude->setGeometry(100, 100, 180, 80);
-    //lineEdit_Longitude->setMaximumWidth(100);
-    //lineEdit_Longitude->setText("121.306427");
+    QLineEdit* lineEdit_Longitude = (QLineEdit*)ttb["lineEdit_Longitude"];
+    lineEdit_Longitude->setGeometry(100, 100, 180, 80);
+    lineEdit_Longitude->setMaximumWidth(100);
+    lineEdit_Longitude->setText("121.306427");
+    QLineEdit* lineEdit_Latitude = (QLineEdit*)ttb["lineEdit_Latitude"];
+    lineEdit_Latitude->setGeometry(100, 200, 180, 80);
+    lineEdit_Latitude->setMaximumWidth(100);
+    lineEdit_Latitude->setText("31.163324");
 
-    //// Î³¶È
-    //QLineEdit* lineEdit_Latitude = new QLineEdit(this);
-    //lineEdit_Latitude->setGeometry(100, 200, 180, 80);
-    //lineEdit_Latitude->setMaximumWidth(100);
-    //lineEdit_Latitude->setText("31.163324");
-    //
-
+    connect(ui->actionView, &QAction::triggered, [=]() {
+            float longitue = lineEdit_Longitude->text().toFloat();
+            float latitude = lineEdit_Latitude->text().toFloat();
+            uavmvs::context::View(osgEarth::Viewpoint("", longitue, latitude, 5000, 0, -90, 1000),
+            5);
+        });
     //QToolButton* viewButton = new QToolButton(this);
     //QIcon        icon(":/Icons/View.png");
     //viewButton->setIcon(icon);

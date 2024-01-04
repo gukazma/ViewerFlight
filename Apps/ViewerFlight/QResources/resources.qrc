@@ -3,6 +3,7 @@
     <file>Translations/zh_CN.qm</file>
     <file>splashScreen.png</file>
     <file>Icons/View.png</file>
+    <file>Icons/geo-fence_30px.png</file>
     <file>style.qss</file>
   </qresource>
   <qresource prefix="/tt">
