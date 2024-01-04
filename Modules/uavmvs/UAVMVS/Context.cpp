@@ -5,6 +5,7 @@
 #include <osg/ComputeBoundsVisitor>
 #include <osg/PositionAttitudeTransform>
 #include <osgDB/ReadFile>
+#include <osgDB/WriteFile>
 #include <osgEarth/AutoClipPlaneHandler>
 #include <osgEarth/AutoScaleCallback>
 #include <osgEarth/EarthManipulator>
@@ -105,7 +106,6 @@ void Attach(osgViewer::Viewer* viewer_)
 
     // initialize a viewer:
     _viewer->getCamera()->addCullCallback(new osgEarth::Util::AutoClipPlaneCullCallback(_mapNode));
-
     _eventHandler = new EventHandler(_root, _mapNode);
     _viewer->addEventHandler(_eventHandler);
     _layerBoudingBox = std::make_shared<osg::BoundingBox>();
@@ -205,6 +205,7 @@ void GenerateProxyMesh() {
             double                   elevation = 0.0;
             elevationQuery.getElevation(*_layerGeoPoint, elevation);
             auto geopoint = *_layerGeoPoint;
+            geopoint.z()  = elevation - _layerBoudingBox->zMin();
             osgEarth::Viewpoint vp;
             vp.focalPoint() = geopoint;
             xform->setPosition(geopoint);
