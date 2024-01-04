@@ -54,6 +54,11 @@
               "itemType":"action",
               "type":"delayedPopup",
               "name":"actionView"
+            },
+            {
+              "itemType":"action",
+              "type":"delayedPopup",
+              "name":"actionViewReset"
             }
           ]
         }

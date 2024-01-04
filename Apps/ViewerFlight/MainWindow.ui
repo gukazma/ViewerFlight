@@ -49,6 +49,15 @@
     <string>选择范围</string>
    </property>
   </action>
+  <action name="actionViewReset">
+   <property name="icon">
+    <iconset resource="QResources/resources.qrc">
+     <normaloff>:/Icons/available_updates_30px.png</normaloff>:/Icons/available_updates_30px.png</iconset>
+   </property>
+   <property name="text">
+    <string>定位重置</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

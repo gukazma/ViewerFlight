@@ -72,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
         });
 
     connect(ui->actionDrawRange, &QAction::triggered, [=]() { uavmvs::context::DrawRange(); });
+    connect(ui->actionViewReset, &QAction::triggered, [=]() { uavmvs::context::HomeLayerView(); });
     //QToolButton* viewButton = new QToolButton(this);
     //QIcon        icon(":/Icons/View.png");
     //viewButton->setIcon(icon);
