@@ -5,4 +5,8 @@
     <file>Icons/View.png</file>
     <file>style.qss</file>
   </qresource>
+  <qresource prefix="/tt">
+        <file>StyleTemplate.qss</file>
+        <file>tabtoolbar.json</file>
+    </qresource>
 </RCC>

@@ -1,6 +1,7 @@
 # 查找 Qt 包信息备用
 set(TARGET_NAME ViewerFlight)
-
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 find_package(Qt5 COMPONENTS Core Widgets Gui OpenGL Concurrent CONFIG REQUIRED)
 
@@ -42,6 +43,7 @@ uavmvs::uavmvs
 )
 target_include_directories(${TARGET_NAME} PRIVATE
 ${CMAKE_CURRENT_LIST_DIR}/Vendors/osgQt
+${CMAKE_CURRENT_LIST_DIR}/Vendors/TabToolbar
 ${OPENSCENEGRAPH_INCLUDE_DIRS}
 )
 

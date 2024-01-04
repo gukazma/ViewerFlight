@@ -9,6 +9,7 @@ class QProgressDialog;
 namespace Ui {
 class MainWindow;
 }
+class TTBuilder;
 
 class MainWindow : public QMainWindow
 {
@@ -29,6 +30,7 @@ protected:
 
 private:
     Ui::MainWindow *ui;
+    TTBuilder*                        ttb;
     QProgressDialog* m_prgDialog = nullptr;
     QFutureWatcher<void>   m_futureWather;
     std::set<boost::filesystem::path> m_tileLoaded;

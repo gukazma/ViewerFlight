@@ -1,0 +1,32 @@
+{
+  "groupHeight":75,
+  "groupRowCount":3,
+  "specialTab":true,
+  "tabs":[
+    {
+      "displayName":"文件",
+      "name":"File",
+      "groups":[]
+    },
+    {
+      "displayName":"航线规划",
+      "name":"UAVMVS",
+      "groups":[]
+    },
+    {
+      "displayName":"显示",
+      "name":"View",
+      "groups":[]
+    },
+    {
+      "displayName":"编辑",
+      "name":"Edit",
+      "groups":[]
+    },
+    {
+      "displayName":"关于",
+      "name":"About",
+      "groups":[]
+    }
+  ]
+}
