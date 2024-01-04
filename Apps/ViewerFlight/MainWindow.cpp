@@ -73,77 +73,7 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
 
     connect(ui->actionDrawRange, &QAction::triggered, [=]() { uavmvs::context::DrawRange(); });
     connect(ui->actionViewReset, &QAction::triggered, [=]() { uavmvs::context::HomeLayerView(); });
-    //QToolButton* viewButton = new QToolButton(this);
-    //QIcon        icon(":/Icons/View.png");
-    //viewButton->setIcon(icon);
-    //viewButton->setMaximumWidth(50);
-
-    //QWidget*     widget   = new QWidget(this);
-    //QHBoxLayout* layout   = new QHBoxLayout(widget);
-    //layout->setAlignment(Qt::AlignLeft);
-    //QLabel* label_Longitude = new QLabel(tr("Longitude"));
-    //label_Longitude->setMaximumWidth(50);
-    //QLabel* label_Latitude = new QLabel(tr("Latitude"));
-    //label_Latitude->setMaximumWidth(50);
-    //layout->addWidget(label_Longitude);
-    //layout->addWidget(lineEdit_Longitude);
-    //layout->addWidget(label_Latitude);
-    //layout->addWidget(lineEdit_Latitude);
-    //layout->addWidget(viewButton);
-
-    //
-
-    //QFrame* separator = new QFrame(this);
-    //separator->setFrameShape(QFrame::VLine);
-    //separator->setFrameShadow(QFrame::Sunken);
-    //layout->addWidget(separator);
-
-    //QPushButton* addLayerButton = new QPushButton(tr("Add layer"));
-    //QPushButton* homeLayerButton = new QPushButton(tr("Home layer"));
-    //QPushButton* drawRangeButton = new QPushButton(tr("Draw range"));
-    //QPushButton* generateProxyMeshButton = new QPushButton(tr("Proxy mesh"));
-    //QPushButton* exportWaypointButton = new QPushButton(tr("Export waypoint"));
-    //addLayerButton->setMaximumWidth(100);
-    //homeLayerButton->setMaximumWidth(130);
-    //drawRangeButton->setMaximumWidth(130);
-    //exportWaypointButton->setMaximumWidth(130);
-    //generateProxyMeshButton->setMaximumWidth(130);
-    //layout->addWidget(addLayerButton);
-    //layout->addWidget(homeLayerButton);
-    //layout->addWidget(drawRangeButton);
-    //layout->addWidget(generateProxyMeshButton);
-    //layout->addWidget(exportWaypointButton);
-
-    //widget->setLayout(layout);
-    //
-    //// 将QWidget部件添加到工具栏
-    //ui->toolBar->addWidget(widget);
-
-    //connect(viewButton, &QPushButton::clicked, [=]() { 
-    //    float longitue = lineEdit_Longitude->text().toFloat();
-    //    float latitude = lineEdit_Latitude->text().toFloat();
-    //    uavmvs::context::View(osgEarth::Viewpoint("", longitue, latitude, 5000, 0, -90, 1000), 5);
-    //});
-
-    //connect(homeLayerButton, &QPushButton::clicked, [=]() {
-    //    uavmvs::context::HomeLayerView();
-    //});
-
-    //connect(drawRangeButton, &QPushButton::clicked, [=]() { uavmvs::context::DrawRange(); });
-    //connect(
-    //    generateProxyMeshButton, &QPushButton::clicked, [=]() { uavmvs::context::GenerateProxyMesh(); });
-
-    //connect(addLayerButton, &QPushButton::clicked, [=]() {
-    //    auto layerDir = QFileDialog::getExistingDirectory(nullptr, tr("Open layer dir"));
-    //    if (!layerDir.isEmpty()) {
-    //        try {
-    //            addLayer(layerDir);
-    //        }
-    //        catch (const std::exception& e) {
-    //            QMessageBox::warning(nullptr, "", e.what());
-    //        }
-    //    }
-    //});
+    connect(ui->actionPossionDisk, &QAction::triggered, [=]() { uavmvs::context::PossionDiskSample(); });
 }
 
 MainWindow::~MainWindow()

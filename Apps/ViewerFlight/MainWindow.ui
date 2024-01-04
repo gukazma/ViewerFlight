@@ -58,6 +58,15 @@
     <string>定位重置</string>
    </property>
   </action>
+  <action name="actionPossionDisk">
+   <property name="icon">
+    <iconset resource="QResources/resources.qrc">
+     <normaloff>:/Icons/braille_30px.png</normaloff>:/Icons/braille_30px.png</iconset>
+   </property>
+   <property name="text">
+    <string>泊松圆盘采样</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

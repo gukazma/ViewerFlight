@@ -20,6 +20,11 @@
               "itemType":"action",
               "type":"delayedPopup",
               "name":"actionDrawRange"
+            },
+            {
+              "itemType":"action",
+              "type":"delayedPopup",
+              "name":"actionPossionDisk"
             }
           ]
         }

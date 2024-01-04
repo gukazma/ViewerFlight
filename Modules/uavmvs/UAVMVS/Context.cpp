@@ -193,11 +193,11 @@ void DrawRange()
 {
     _eventHandler->isOpen = true;
 }
-void GenerateProxyMesh() {
+void PossionDiskSample() {
     if (_currentTile) {
         DrawableVistor visitor;
         _currentTile->accept(visitor);
-        auto points =  uavmvs::mesh::PossionDisk(visitor.m_geoms);
+        auto points = uavmvs::mesh::PossionDisk(visitor.m_geoms);
         if (points) {
             osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
             xform->setTerrain(_mapNode->getTerrain());

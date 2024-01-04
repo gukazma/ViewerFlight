@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>Icons/braille_30px.png</file>
     <file>Icons/available_updates_30px.png</file>
     <file>Icons/floor_plan_30px.png</file>
     <file>Translations/zh_CN.qm</file>
