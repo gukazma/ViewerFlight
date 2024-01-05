@@ -34,7 +34,7 @@
   <action name="actionView">
    <property name="icon">
     <iconset resource="QResources/resources.qrc">
-     <normaloff>:/Icons/geo-fence_30px.png</normaloff>:/Icons/geo-fence_30px.png</iconset>
+     <normaloff>:/Icons/worldwide_location_30px.png</normaloff>:/Icons/worldwide_location_30px.png</iconset>
    </property>
    <property name="text">
     <string>定位</string>
@@ -65,6 +65,15 @@
    </property>
    <property name="text">
     <string>泊松圆盘采样</string>
+   </property>
+  </action>
+  <action name="actionAirspace">
+   <property name="icon">
+    <iconset resource="QResources/resources.qrc">
+     <normaloff>:/Icons/bank_building_30px.png</normaloff>:/Icons/bank_building_30px.png</iconset>
+   </property>
+   <property name="text">
+    <string>安全罩</string>
    </property>
   </action>
  </widget>

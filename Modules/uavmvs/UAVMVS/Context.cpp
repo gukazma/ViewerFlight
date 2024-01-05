@@ -44,6 +44,8 @@ std::shared_ptr<osgEarth::GeoPoint>                                  _layerGeoPo
 std::unordered_map<std::string, std::shared_ptr<osgEarth::GeoPoint>>
     _loadedTileGeoPoint;
 std::shared_ptr<osg::BoundingBox>                                    _layerBoudingBox;
+DrawableVistor                                                      _visitor;
+
 namespace uavmvs {
 namespace context {
 void Init()
@@ -180,6 +182,18 @@ void HomeLayerView() {
         View(vp, 5);
     }
 }
+std::vector<osg::Geometry*> VisitTile()
+{
+    DrawableVistor visitor;
+    _currentTile->accept(visitor);
+    return visitor.m_geoms;
+}
+void AppendTile(osg::Geometry* geom) {
+    uavmvs::mesh::AppendTile(geom);
+}
+void GenerateAirspace(osg::Geometry* geom) {
+
+}
 void Destory() {
     /*_root.release();
     _cameraManipulator.release();*/
@@ -195,9 +209,7 @@ void DrawRange()
 }
 void PossionDiskSample() {
     if (_currentTile) {
-        DrawableVistor visitor;
-        _currentTile->accept(visitor);
-        auto points = uavmvs::mesh::PossionDisk(visitor.m_geoms);
+        auto points = uavmvs::mesh::PossionDisk();
         if (points) {
             osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
             xform->setTerrain(_mapNode->getTerrain());

@@ -25,6 +25,11 @@
               "itemType":"action",
               "type":"delayedPopup",
               "name":"actionPossionDisk"
+            },
+            {
+              "itemType":"action",
+              "type":"delayedPopup",
+              "name":"actionAirspace"
             }
           ]
         }

@@ -73,7 +73,14 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
 
     connect(ui->actionDrawRange, &QAction::triggered, [=]() { uavmvs::context::DrawRange(); });
     connect(ui->actionViewReset, &QAction::triggered, [=]() { uavmvs::context::HomeLayerView(); });
-    connect(ui->actionPossionDisk, &QAction::triggered, [=]() { uavmvs::context::PossionDiskSample(); });
+    connect(ui->actionPossionDisk, &QAction::triggered, [=]() { 
+        auto geoms = uavmvs::context::VisitTile();
+        m_futureWather.setFuture(QtConcurrent::map(geoms, &uavmvs::context::AppendTile));
+        m_prgDialog->setVisible(true);
+        m_prgDialog->exec();
+        m_futureWather.waitForFinished();
+        uavmvs::context::PossionDiskSample(); 
+        });
 }
 
 MainWindow::~MainWindow()

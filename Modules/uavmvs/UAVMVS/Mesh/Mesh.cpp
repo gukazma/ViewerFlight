@@ -15,6 +15,7 @@
 #include <osgEarth/PointDrawable>
 #include <osg/Shape>
 #include <osg/ShapeDrawable>
+#include <mutex>
 class MyVertex;
 class MyEdge;
 class MyFace;
@@ -75,6 +76,8 @@ template<> struct hash<vcg::Point3f>
     }
 };
 }   // namespace std
+MyMesh _tileMesh;
+std::mutex _tileMutex;
 
 namespace uavmvs {
 namespace mesh {
@@ -143,27 +146,35 @@ static void OSG2Mesh(osg::Geometry* geometry_, MyMesh& mesh_)
     }
 }
 
-osg::ref_ptr<osg::Geode> PossionDisk(std::vector<osg::Geometry*>& geometries) {
-    MyMesh mesh;
-    for (auto& geom : geometries) {
-        MyMesh submesh;
-        OSG2Mesh(geom, submesh);
-        vcg::tri::Append<MyMesh, MyMesh>::Mesh(mesh, submesh);
-    }
-    vcg::tri::UpdateBounding<MyMesh>::Box(mesh);
-    vcg::tri::Clean<MyMesh>::RemoveUnreferencedVertex(mesh);
-    vcg::tri::Allocator<MyMesh>::CompactEveryVector(mesh);
-    vcg::tri::UpdateTopology<MyMesh>::VertexFace(mesh);
+void AppendTile(osg::Geometry* geom)
+{
+    MyMesh submesh;
+    OSG2Mesh(geom, submesh);
+    std::lock_guard lk(_tileMutex);
+    vcg::tri::Append<MyMesh, MyMesh>::Mesh(_tileMesh, submesh);
+}
+
+void SaveTile(const boost::filesystem::path& path_)
+{
+    vcg::tri::io::ExporterPLY<MyMesh>::Save(_tileMesh, path_.generic_string().c_str());
+}
+
+osg::ref_ptr<osg::Geode> PossionDisk()
+{
+    vcg::tri::UpdateBounding<MyMesh>::Box(_tileMesh);
+    vcg::tri::Clean<MyMesh>::RemoveUnreferencedVertex(_tileMesh);
+    vcg::tri::Allocator<MyMesh>::CompactEveryVector(_tileMesh);
+    vcg::tri::UpdateTopology<MyMesh>::VertexFace(_tileMesh);
 
     vcg::tri::SurfaceSampling<MyMesh, vcg::tri::TrivialPointerSampler<MyMesh>>::PoissonDiskParam pp;
-    vcg::tri::UpdateFlags<MyMesh>::FaceBorderFromVF(mesh);
-    vcg::tri::UpdateFlags<MyMesh>::VertexBorderFromFaceBorder(mesh);
-    vcg::tri::UpdateNormal<MyMesh>::PerFace(mesh);
-    vcg::tri::UpdateNormal<MyMesh>::PerVertex(mesh);
+    vcg::tri::UpdateFlags<MyMesh>::FaceBorderFromVF(_tileMesh);
+    vcg::tri::UpdateFlags<MyMesh>::VertexBorderFromFaceBorder(_tileMesh);
+    vcg::tri::UpdateNormal<MyMesh>::PerFace(_tileMesh);
+    vcg::tri::UpdateNormal<MyMesh>::PerVertex(_tileMesh);
 
     vcg::tri::TrivialPointerSampler<MyMesh> mps;
     vcg::tri::SurfaceSampling<MyMesh, vcg::tri::TrivialPointerSampler<MyMesh>>::PoissonDiskPruning(
-        mps, mesh, 10, pp);
+        mps, _tileMesh, 10, pp);
     MyMesh PoissonMesh;
     vcg::tri::RequirePerVertexNormal<MyMesh>(PoissonMesh);
 
