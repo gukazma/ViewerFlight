@@ -79,7 +79,14 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
         m_prgDialog->setVisible(true);
         m_prgDialog->exec();
         m_futureWather.waitForFinished();
-        uavmvs::context::PossionDiskSample(); 
+
+        std::vector<int> tasks = {1};
+        m_futureWather.setFuture(QtConcurrent::map(tasks, [&](int) {
+              uavmvs::context::PossionDiskSample(); 
+            }));
+        m_prgDialog->setVisible(true);
+        m_prgDialog->exec();
+        m_futureWather.waitForFinished();
         });
 }
 
