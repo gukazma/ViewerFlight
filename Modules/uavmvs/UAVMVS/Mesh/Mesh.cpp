@@ -15,6 +15,8 @@
 #include <osgEarth/PointDrawable>
 #include <osg/Shape>
 #include <osg/ShapeDrawable>
+#include <osg/BlendColor>
+#include <osg/BlendFunc>
 #include <osgUtil/SmoothingVisitor>
 #include <mutex>
 class MyVertex;
@@ -207,6 +209,34 @@ osg::ref_ptr<osg::Geode> PossionDisk()
 
     return geode;
 }
+
+void MakeTransparent(osg::Node* node, float transparencyValue)
+{
+    auto geode = node->asGeode();
+    if (!geode) return;
+
+    for (size_t i = 0; i < geode->getNumDrawables(); i++) {
+        auto drawable = geode->getDrawable(i);
+        auto geometry = drawable->asGeometry();
+        if (!geometry) continue;
+        osg::StateSet* state = geometry->getOrCreateStateSet();
+        // 关闭灯光
+        state->setMode(GL_LIGHTING, osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED);
+        // 打开混合融合模式
+        state->setMode(GL_BLEND, osg::StateAttribute::ON);
+        state->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+        state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+        // 使用BlendFunc实现透明效果
+        osg::BlendColor* bc = new osg::BlendColor(osg::Vec4(1.0, 1.0, 1.0, 0.0));
+        osg::BlendFunc*  bf = new osg::BlendFunc();
+        state->setAttributeAndModes(bf, osg::StateAttribute::ON);
+        state->setAttributeAndModes(bc, osg::StateAttribute::ON);
+        bf->setSource(osg::BlendFunc::CONSTANT_ALPHA);
+        bf->setDestination(osg::BlendFunc::ONE_MINUS_CONSTANT_ALPHA);
+        bc->setConstantColor(osg::Vec4(1, 1, 1, 0.5));
+    }
+}
+
 osg::ref_ptr<osg::Geode> GenerateAirspace()
 {
     osg::ref_ptr<osg::Vec3Array>        vertices = new osg::Vec3Array;
@@ -241,6 +271,7 @@ osg::ref_ptr<osg::Geode> GenerateAirspace()
     osgUtil::SmoothingVisitor::smooth(*geometry);
     osg::ref_ptr<osg::Geode> geode = new osg::Geode;
     geode->addDrawable(geometry);
+    MakeTransparent(geode, 0.5);
     return geode;
 }
 }
