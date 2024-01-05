@@ -184,11 +184,13 @@ void HomeLayerView() {
 }
 std::vector<osg::Geometry*> VisitTile()
 {
+    if (!_currentTile) std::vector<osg::Geometry*>();
     DrawableVistor visitor;
     _currentTile->accept(visitor);
     return visitor.m_geoms;
 }
 void AppendTile(osg::Geometry* geom) {
+    if (!geom) return;
     uavmvs::mesh::AppendTile(geom);
 }
 void GenerateAirspace(osg::Geometry* geom) {
