@@ -15,6 +15,7 @@
 #include <osgEarth/PointDrawable>
 #include <osg/Shape>
 #include <osg/ShapeDrawable>
+#include <osgUtil/SmoothingVisitor>
 #include <mutex>
 class MyVertex;
 class MyEdge;
@@ -186,6 +187,7 @@ osg::ref_ptr<osg::Geode> PossionDisk()
     }
 
     vcg::tri::UpdateNormal<MyMesh>::NormalizePerVertex(PoissonMesh);
+    vcg::tri::UpdateNormal<MyMesh>::NormalizePerVertex(_tileMesh);
 
     // 设置关联方式
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
@@ -203,6 +205,42 @@ osg::ref_ptr<osg::Geode> PossionDisk()
         geode->addDrawable(shapeDrawable);
     }
 
+    return geode;
+}
+osg::ref_ptr<osg::Geode> GenerateAirspace()
+{
+    osg::ref_ptr<osg::Vec3Array>        vertices = new osg::Vec3Array;
+    osg::ref_ptr<osg::DrawElementsUInt> drawElements =
+        new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES);
+    osg::ref_ptr<osg::Geometry>         geometry = new osg::Geometry;
+
+    for (size_t i = 0; i < _tileMesh.vert.size(); i++) {
+        auto           v      = _tileMesh.vert[i];
+        auto           n      = _tileMesh.vert[i].N();
+        v.P() += (n * 5.0f);
+        osg::Vec3 vertex = osg::Vec3(v.P().X(), v.P().Y(), v.P().Z());
+        vertices->push_back(vertex);
+    }
+
+    for (int fn = 0; fn < _tileMesh.face.size(); fn++) {
+        auto& f = _tileMesh.face[fn];
+        if (!f.IsD()) {
+            for (size_t i = 0; i < 3; i++) {
+                auto                    v        = f.V(i);
+                int index = vcg::tri::Index(_tileMesh, v);
+                drawElements->push_back(index);
+            }
+        }
+    }
+
+    geometry->setVertexArray(vertices);
+    geometry->addPrimitiveSet(drawElements);
+    osg::ref_ptr<osg::StateSet> stateset = geometry->getOrCreateStateSet();
+    geometry->setUseVertexBufferObjects(true);
+
+    osgUtil::SmoothingVisitor::smooth(*geometry);
+    osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+    geode->addDrawable(geometry);
     return geode;
 }
 }

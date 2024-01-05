@@ -73,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
 
     connect(ui->actionDrawRange, &QAction::triggered, [=]() { uavmvs::context::DrawRange(); });
     connect(ui->actionViewReset, &QAction::triggered, [=]() { uavmvs::context::HomeLayerView(); });
+    connect(ui->actionAirspace, &QAction::triggered, [=]() { uavmvs::context::GenerateAirspace(); });
     connect(ui->actionPossionDisk, &QAction::triggered, [=]() { 
         auto geoms = uavmvs::context::VisitTile();
         m_futureWather.setFuture(QtConcurrent::map(geoms, &uavmvs::context::AppendTile));

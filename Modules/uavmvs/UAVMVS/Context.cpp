@@ -193,8 +193,25 @@ void AppendTile(osg::Geometry* geom) {
     if (!geom) return;
     uavmvs::mesh::AppendTile(geom);
 }
-void GenerateAirspace(osg::Geometry* geom) {
+void GenerateAirspace() {
+    auto geode = uavmvs::mesh::GenerateAirspace();
 
+    if (geode) {
+        osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
+        xform->setTerrain(_mapNode->getTerrain());
+        // 查询海拔高度
+        osgEarth::ElevationQuery elevationQuery(_mapNode->getMap());
+        double                   elevation = 0.0;
+        elevationQuery.getElevation(*_layerGeoPoint, elevation);
+        auto geopoint = *_layerGeoPoint;
+        geopoint.z()  = elevation - _layerBoudingBox->zMin();
+        osgEarth::Viewpoint vp;
+        vp.focalPoint() = geopoint;
+        xform->setPosition(geopoint);
+        osgEarth::Registry::shaderGenerator().run(geode);
+        xform->addChild(geode);
+        _root->addChild(xform);
+    }
 }
 void Destory() {
     /*_root.release();

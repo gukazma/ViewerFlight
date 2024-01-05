@@ -16,6 +16,7 @@ void AddLayer(osg::ref_ptr<osg::Group> tiles_, osg::BoundingBox bbox_);
 void SetupMetadata(
     const boost::filesystem::path& matadataPath_);
 void HomeLayerView();
+void GenerateAirspace();
 std::vector<osg::Geometry*> VisitTile();
 void AppendTile(osg::Geometry* geom);
 void Destory();
