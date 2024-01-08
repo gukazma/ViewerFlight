@@ -76,6 +76,23 @@
               "name":"actionViewReset"
             }
           ]
+        },
+        {
+          "displayName":"显示",
+          "name":"ViewOptions",
+          "aligned":true,
+          "content":[
+            {
+              "itemType":"action",
+              "type":"delayedPopup",
+              "name":"actionShowAirspace"
+            },
+            {
+              "itemType":"action",
+              "type":"delayedPopup",
+              "name":"actionShowDiskPoints"
+            }
+          ]
         }
       ]
     },

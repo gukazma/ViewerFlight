@@ -88,6 +88,39 @@
     <string>选择安全罩范围</string>
    </property>
   </action>
+  <action name="actionShowAirspace">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QResources/resources.qrc">
+     <normaloff>:/Icons/bank_building_30px.png</normaloff>:/Icons/bank_building_30px.png</iconset>
+   </property>
+   <property name="text">
+    <string>安全罩</string>
+   </property>
+   <property name="toolTip">
+    <string>显示安全罩</string>
+   </property>
+  </action>
+  <action name="actionShowDiskPoints">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QResources/resources.qrc">
+     <normaloff>:/Icons/braille_30px.png</normaloff>:/Icons/braille_30px.png</iconset>
+   </property>
+   <property name="text">
+    <string>采样点</string>
+   </property>
+   <property name="toolTip">
+    <string>显示采样点</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

@@ -47,6 +47,7 @@ std::unordered_map<std::string, std::shared_ptr<osgEarth::GeoPoint>>
     _loadedTileGeoPoint;
 std::shared_ptr<osg::BoundingBox>                                    _layerBoudingBox;
 DrawableVistor                                                      _visitor;
+osg::ref_ptr<osgEarth::GeoTransform> _diskPointNode;
 
 namespace uavmvs {
 namespace context {
@@ -202,6 +203,7 @@ void GenerateAirspace() {
     auto geode = uavmvs::mesh::GenerateAirspace();
 
     if (geode) {
+        if (_diskPointNode) {}
         osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
         xform->setTerrain(_mapNode->getTerrain());
         // 查询海拔高度
@@ -238,13 +240,26 @@ void DrawAirspaceRange() {
     _eventHandler->isdrawAirspace = true;
     _eventHandler->clear();
 }
+
+void ShowDiskPoints(bool flag_) {
+    if (!_diskPointNode) return;
+    if (flag_) {
+        _diskPointNode->setNodeMask(0xffffffff);
+    }
+    else {
+        _diskPointNode->setNodeMask(0);
+    }
+}
 void PossionDiskSample() {
     if (_currentTile) {
         auto points = uavmvs::mesh::PossionDisk();
-
+        if (!_diskPointNode) {
+            _diskPointNode = new osgEarth::GeoTransform();
+            _root->addChild(_diskPointNode);
+        }
+        _diskPointNode->removeChild(0, _diskPointNode->getNumChildren());
         if (points) {
-            osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
-            xform->setTerrain(_mapNode->getTerrain());
+            _diskPointNode->setTerrain(_mapNode->getTerrain());
             // 查询海拔高度
             osgEarth::ElevationQuery elevationQuery(_mapNode->getMap());
             double                   elevation = 0.0;
@@ -253,10 +268,9 @@ void PossionDiskSample() {
             geopoint.z()  = elevation - _layerBoudingBox->zMin();
             osgEarth::Viewpoint vp;
             vp.focalPoint() = geopoint;
-            xform->setPosition(geopoint);
+            _diskPointNode->setPosition(geopoint);
             osgEarth::Registry::shaderGenerator().run(points);
-            xform->addChild(points);
-            _root->addChild(xform);
+            _diskPointNode->addChild(points);
         }
     }
 }
