@@ -205,8 +205,10 @@ void GenerateAirspace() {
     if (!_airspaceNode) {
         _airspaceNode = new osgEarth::GeoTransform();
         _root->addChild(_airspaceNode);
-        _airspaceNode->removeChild(0, _airspaceNode->getNumChildren());
         _airspaceNode->setNodeMask(0);
+    }
+    if (_airspaceNode->getNumChildren()) {
+        _airspaceNode->removeChild(0, _airspaceNode->getNumChildren());
     }
     if (geode) {
         if (_diskPointNode) {}

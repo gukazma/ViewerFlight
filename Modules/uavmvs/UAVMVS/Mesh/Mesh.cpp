@@ -84,7 +84,8 @@ template<> struct hash<vcg::Point3f>
     }
 };
 }   // namespace std
-MyMesh _tileMesh;
+MyMesh     _tileMesh;
+MyMesh     _airspaceMesh;
 std::mutex _tileMutex;
 
 namespace uavmvs {
@@ -259,35 +260,38 @@ void MakeTransparent(osg::Node* node, float transparencyValue)
 
 osg::ref_ptr<osg::Geode> GenerateAirspace()
 {
-    vcg::tri::UpdateBounding<MyMesh>::Box(_tileMesh);
-    vcg::tri::Clean<MyMesh>::RemoveUnreferencedVertex(_tileMesh);
-    vcg::tri::Allocator<MyMesh>::CompactEveryVector(_tileMesh);
-    vcg::tri::UpdateTopology<MyMesh>::VertexFace(_tileMesh);
-    vcg::tri::UpdateFlags<MyMesh>::FaceBorderFromVF(_tileMesh);
-    vcg::tri::UpdateFlags<MyMesh>::VertexBorderFromFaceBorder(_tileMesh);
-    vcg::tri::UpdateNormal<MyMesh>::PerFace(_tileMesh);
-    vcg::tri::UpdateNormal<MyMesh>::PerVertex(_tileMesh);
-    vcg::tri::UpdateNormal<MyMesh>::NormalizePerVertex(_tileMesh);
+    vcg::tri::Append<MyMesh, MyMesh>::MeshCopyConst(_airspaceMesh, _tileMesh);
+    FilterAirspaceRange();
+
+    vcg::tri::UpdateBounding<MyMesh>::Box(_airspaceMesh);
+    vcg::tri::Clean<MyMesh>::RemoveUnreferencedVertex(_airspaceMesh);
+    vcg::tri::Allocator<MyMesh>::CompactEveryVector(_airspaceMesh);
+    vcg::tri::UpdateTopology<MyMesh>::VertexFace(_airspaceMesh);
+    vcg::tri::UpdateFlags<MyMesh>::FaceBorderFromVF(_airspaceMesh);
+    vcg::tri::UpdateFlags<MyMesh>::VertexBorderFromFaceBorder(_airspaceMesh);
+    vcg::tri::UpdateNormal<MyMesh>::PerFace(_airspaceMesh);
+    vcg::tri::UpdateNormal<MyMesh>::PerVertex(_airspaceMesh);
+    vcg::tri::UpdateNormal<MyMesh>::NormalizePerVertex(_airspaceMesh);
 
     osg::ref_ptr<osg::Vec3Array>        vertices = new osg::Vec3Array;
     osg::ref_ptr<osg::DrawElementsUInt> drawElements =
         new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES);
     osg::ref_ptr<osg::Geometry>         geometry = new osg::Geometry;
 
-    for (size_t i = 0; i < _tileMesh.vert.size(); i++) {
-        auto           v      = _tileMesh.vert[i];
-        auto           n      = _tileMesh.vert[i].N();
+    for (size_t i = 0; i < _airspaceMesh.vert.size(); i++) {
+        auto v = _airspaceMesh.vert[i];
+        auto n = _airspaceMesh.vert[i].N();
         v.P() += (n * 5.0f);
         osg::Vec3 vertex = osg::Vec3(v.P().X(), v.P().Y(), v.P().Z());
         vertices->push_back(vertex);
     }
 
-    for (int fn = 0; fn < _tileMesh.face.size(); fn++) {
-        auto& f = _tileMesh.face[fn];
+    for (int fn = 0; fn < _airspaceMesh.face.size(); fn++) {
+        auto& f = _airspaceMesh.face[fn];
         if (!f.IsD()) {
             for (size_t i = 0; i < 3; i++) {
                 auto                    v        = f.V(i);
-                int index = vcg::tri::Index(_tileMesh, v);
+                int  index = vcg::tri::Index(_airspaceMesh, v);
                 drawElements->push_back(index);
             }
         }
@@ -306,6 +310,32 @@ osg::ref_ptr<osg::Geode> GenerateAirspace()
     geode->addDrawable(geometry);
     MakeTransparent(geode, 0.5);
     return geode;
+}
+void FilterAirspaceRange() {
+    for (int fn = 0; fn < _airspaceMesh.face.size(); fn++) {
+        auto& f = _airspaceMesh.face[fn];
+        f.ClearD();
+    }
+
+    std::vector<osg::Vec3> rangePoints = uavmvs::context::GetAirspaceRange();
+    polygon_type           rangePolygon;
+    for (size_t i = 0; i < rangePoints.size(); i++) {
+        boost::geometry::append(rangePolygon, point_type(rangePoints[i].x(), rangePoints[i].y()));
+    }
+
+    for (int fn = 0; fn < _airspaceMesh.face.size(); fn++) {
+        auto& f = _airspaceMesh.face[fn];
+        if (!f.IsD()) {
+            for (size_t i = 0; i < 3; i++) {
+                auto v = f.V(i);
+                bool isWithin =
+                    boost::geometry::within(point_type(v->P()[0], v->P()[1]), rangePolygon);
+                if (!isWithin) {
+                    f.SetD();
+                }
+            }
+        }
+    }
 }
 }
 

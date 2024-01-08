@@ -87,7 +87,14 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
                 return;
             }
             visitTile();
-            uavmvs::context::GenerateAirspace();
+
+            std::vector<int> tasks = {1};
+            m_futureWather.setFuture(
+                QtConcurrent::map(tasks, [&](int) { uavmvs::context::GenerateAirspace(); }));
+            m_prgDialog->setVisible(true);
+            m_prgDialog->exec();
+            m_futureWather.waitForFinished();
+
             QMessageBox::information(nullptr, "Info", QString::fromLocal8Bit("成功生成安全罩"));
         });
     connect(
