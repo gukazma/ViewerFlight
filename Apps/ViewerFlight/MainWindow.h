@@ -10,6 +10,7 @@ namespace Ui {
 class MainWindow;
 }
 class TTBuilder;
+class SettingsDialog;
 
 class MainWindow : public QMainWindow
 {
@@ -32,6 +33,7 @@ private:
 private:
     Ui::MainWindow *ui;
     TTBuilder*                        ttb;
+    SettingsDialog*                    m_settingsDialog;
     QProgressDialog* m_prgDialog = nullptr;
     QFutureWatcher<void>   m_futureWather;
     std::set<boost::filesystem::path> m_tileLoaded;

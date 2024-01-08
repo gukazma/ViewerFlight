@@ -31,9 +31,10 @@
 #include <TabToolbar/SubGroup.h>
 #include <TabToolbar/StyleTools.h>
 #include <TabToolbar/Builder.h>
+#include "SettingsDialog.h"
 MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
-    ,
-    ui(new Ui::MainWindow)
+    , ui(new Ui::MainWindow)
+    , m_settingsDialog(new SettingsDialog)
 {   
     ui->setupUi(this);
     createProgressDialog();
@@ -72,6 +73,9 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
         });
 
     connect(ui->actionDrawRange, &QAction::triggered, [=]() { uavmvs::context::DrawRange(); });
+    connect(ui->actionSettings, &QAction::triggered, [=]() { 
+            m_settingsDialog->show();
+        });
     connect(ui->actionViewReset, &QAction::triggered, [=]() { uavmvs::context::HomeLayerView(); });
     connect(ui->actionShowDiskPoints, &QAction::triggered, [=](bool checked) {
         uavmvs::context::ShowDiskPoints(checked);
