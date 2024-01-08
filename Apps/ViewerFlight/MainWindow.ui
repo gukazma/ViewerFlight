@@ -121,6 +121,21 @@
     <string>显示采样点</string>
    </property>
   </action>
+  <action name="actionShowNormal">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="QResources/resources.qrc">
+     <normaloff>:/Icons/upload_30px.png</normaloff>:/Icons/upload_30px.png</iconset>
+   </property>
+   <property name="text">
+    <string>法线</string>
+   </property>
+   <property name="toolTip">
+    <string>显示法线</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

@@ -91,6 +91,11 @@
               "itemType":"action",
               "type":"delayedPopup",
               "name":"actionShowDiskPoints"
+            },
+            {
+              "itemType":"action",
+              "type":"delayedPopup",
+              "name":"actionShowNormal"
             }
           ]
         }
