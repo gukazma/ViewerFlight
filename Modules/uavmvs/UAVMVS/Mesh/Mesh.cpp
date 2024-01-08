@@ -259,6 +259,16 @@ void MakeTransparent(osg::Node* node, float transparencyValue)
 
 osg::ref_ptr<osg::Geode> GenerateAirspace()
 {
+    vcg::tri::UpdateBounding<MyMesh>::Box(_tileMesh);
+    vcg::tri::Clean<MyMesh>::RemoveUnreferencedVertex(_tileMesh);
+    vcg::tri::Allocator<MyMesh>::CompactEveryVector(_tileMesh);
+    vcg::tri::UpdateTopology<MyMesh>::VertexFace(_tileMesh);
+    vcg::tri::UpdateFlags<MyMesh>::FaceBorderFromVF(_tileMesh);
+    vcg::tri::UpdateFlags<MyMesh>::VertexBorderFromFaceBorder(_tileMesh);
+    vcg::tri::UpdateNormal<MyMesh>::PerFace(_tileMesh);
+    vcg::tri::UpdateNormal<MyMesh>::PerVertex(_tileMesh);
+    vcg::tri::UpdateNormal<MyMesh>::NormalizePerVertex(_tileMesh);
+
     osg::ref_ptr<osg::Vec3Array>        vertices = new osg::Vec3Array;
     osg::ref_ptr<osg::DrawElementsUInt> drawElements =
         new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES);
@@ -287,7 +297,10 @@ osg::ref_ptr<osg::Geode> GenerateAirspace()
     geometry->addPrimitiveSet(drawElements);
     osg::ref_ptr<osg::StateSet> stateset = geometry->getOrCreateStateSet();
     geometry->setUseVertexBufferObjects(true);
-
+    osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+    colors->push_back(osg::Vec4(0.0f, 1.0f, 0.0f, 1.0f));   // ºìÉ«
+    geometry->setColorArray(colors);
+    geometry->setColorBinding(osg::Geometry::BIND_OVERALL);
     osgUtil::SmoothingVisitor::smooth(*geometry);
     osg::ref_ptr<osg::Geode> geode = new osg::Geode;
     geode->addDrawable(geometry);
