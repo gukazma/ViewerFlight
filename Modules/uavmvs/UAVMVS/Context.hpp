@@ -23,5 +23,6 @@ void Destory();
 void Resize(double width_, double height_);
 void DrawRange();
 void PossionDiskSample();
+std::vector<osg::Vec3>      GetRangePolygon();
 }
 }

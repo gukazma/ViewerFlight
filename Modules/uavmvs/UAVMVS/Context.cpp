@@ -34,6 +34,8 @@
 #include "UAVMVS/Mesh/Mesh.h"
 #include <osgEarth/PointDrawable>
 
+
+
 osgViewer::Viewer* _viewer;
 osg::ref_ptr<osg::Group>                       _root;
 osg::ref_ptr<osg::Group>                                             _currentTile;
@@ -229,6 +231,7 @@ void DrawRange()
 void PossionDiskSample() {
     if (_currentTile) {
         auto points = uavmvs::mesh::PossionDisk();
+
         if (points) {
             osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
             xform->setTerrain(_mapNode->getTerrain());
@@ -246,6 +249,13 @@ void PossionDiskSample() {
             _root->addChild(xform);
         }
     }
+}
+std::vector<osg::Vec3> GetRangePolygon()
+{
+    if (_eventHandler) {
+        return _eventHandler->m_rangeStack;
+    }
+    return std::vector<osg::Vec3>();
 }
 }   // namespace context
 }   // namespace uavmvs

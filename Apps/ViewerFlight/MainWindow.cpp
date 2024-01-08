@@ -75,6 +75,11 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
     connect(ui->actionViewReset, &QAction::triggered, [=]() { uavmvs::context::HomeLayerView(); });
     connect(ui->actionAirspace, &QAction::triggered, [=]() { uavmvs::context::GenerateAirspace(); });
     connect(ui->actionPossionDisk, &QAction::triggered, [=]() { 
+        auto rangePoly = uavmvs::context::GetRangePolygon();
+        if (rangePoly.size() <= 2) {
+            QMessageBox::critical(nullptr, "Error", QString::fromLocal8Bit("请先绘制模型范围"));
+            return;
+        }
         auto geoms = uavmvs::context::VisitTile();
         m_futureWather.setFuture(QtConcurrent::map(geoms, &uavmvs::context::AppendTile));
         m_prgDialog->setVisible(true);

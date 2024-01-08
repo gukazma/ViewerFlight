@@ -13,10 +13,10 @@ public:
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void         clear();
     bool         isOpen = false;
+    std::vector<osg::Vec3> m_rangeStack;
 
 private:
     osg::ref_ptr<osg::Group>      m_root;
     osg::ref_ptr<osgEarth::MapNode> m_mapNode;
     osg::ref_ptr <osgEarth::LineDrawable> m_linedrawable;
-    std::vector<osg::Vec3>                m_rangeStack;
 };

@@ -18,10 +18,15 @@
 #include <osg/BlendColor>
 #include <osg/BlendFunc>
 #include <osgUtil/SmoothingVisitor>
+#include <boost/geometry.hpp>
 #include <mutex>
+#include "UAVMVS/Context.hpp"
 class MyVertex;
 class MyEdge;
 class MyFace;
+
+typedef boost::geometry::model::d2::point_xy<double> point_type;
+typedef boost::geometry::model::polygon<point_type>  polygon_type;
 
 struct MyUsedTypes
     : public vcg::UsedTypes<vcg::Use<MyVertex>::AsVertexType, vcg::Use<MyEdge>::AsEdgeType,
@@ -164,6 +169,12 @@ void SaveTile(const boost::filesystem::path& path_)
 
 osg::ref_ptr<osg::Geode> PossionDisk()
 {
+    std::vector<osg::Vec3> rangePoints = uavmvs::context::GetRangePolygon();
+    polygon_type           rangePolygon;
+    for (size_t i = 0; i < rangePoints.size(); i++) {
+        boost::geometry::append(rangePolygon, point_type(rangePoints[i].x(), rangePoints[i].y()));
+    }
+
     vcg::tri::UpdateBounding<MyMesh>::Box(_tileMesh);
     vcg::tri::Clean<MyMesh>::RemoveUnreferencedVertex(_tileMesh);
     vcg::tri::Allocator<MyMesh>::CompactEveryVector(_tileMesh);
@@ -194,6 +205,10 @@ osg::ref_ptr<osg::Geode> PossionDisk()
     // 设置关联方式
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
     for (size_t i = 0; i < PoissonMesh.vert.size(); i++) {
+
+        bool isWithin = boost::geometry::within(
+            point_type(PoissonMesh.vert[i].P()[0], PoissonMesh.vert[i].P()[1]), rangePolygon);
+        if (!isWithin) continue;
         osg::ref_ptr<osg::Sphere> sphere = new osg::Sphere(
             {PoissonMesh.vert[i].P()[0], PoissonMesh.vert[i].P()[1], PoissonMesh.vert[i].P()[2]},
             1.0f);
