@@ -353,7 +353,9 @@ void PossionDiskSample() {
             _diskPointNode = new osgEarth::GeoTransform();
             _root->addChild(_diskPointNode);
         }
-        _diskPointNode->removeChild(0, _diskPointNode->getNumChildren());
+        if (_diskPointNode->getNumChildren()) {
+            _diskPointNode->removeChild(0, _diskPointNode->getNumChildren());
+        }
         if (points) {
             _diskPointNode->setTerrain(_mapNode->getTerrain());
             // 查询海拔高度
