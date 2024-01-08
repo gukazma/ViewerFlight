@@ -2,6 +2,9 @@
   "groupHeight":75,
   "groupRowCount":3,
   "specialTab":true,
+  "cornerActions":[
+    "actionSettings"
+  ],
   "tabs":[
     {
       "displayName":"文件",
