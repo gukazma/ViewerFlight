@@ -49,6 +49,7 @@ std::shared_ptr<osg::BoundingBox>                                    _layerBoudi
 DrawableVistor                                                      _visitor;
 osg::ref_ptr<osgEarth::GeoTransform>                                 _diskPointNode;
 osg::ref_ptr<osgEarth::GeoTransform>                                 _airspaceNode;
+osg::ref_ptr<osgEarth::GeoTransform>                                 _nromalNode;
 
 namespace uavmvs {
 namespace context {

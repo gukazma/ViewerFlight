@@ -86,6 +86,7 @@ template<> struct hash<vcg::Point3f>
 }   // namespace std
 MyMesh     _tileMesh;
 MyMesh     _airspaceMesh;
+MyMesh     _diskSamplePoints;
 std::mutex _tileMutex;
 
 namespace uavmvs {
@@ -175,6 +176,7 @@ bool IsGeneratedTileMesh()
 
 osg::ref_ptr<osg::Geode> PossionDisk()
 {
+    _diskSamplePoints.Clear();
     std::vector<osg::Vec3> rangePoints = uavmvs::context::GetRangePolygon();
     polygon_type           rangePolygon;
     for (size_t i = 0; i < rangePoints.size(); i++) {
@@ -195,28 +197,29 @@ osg::ref_ptr<osg::Geode> PossionDisk()
     vcg::tri::TrivialPointerSampler<MyMesh> mps;
     vcg::tri::SurfaceSampling<MyMesh, vcg::tri::TrivialPointerSampler<MyMesh>>::PoissonDiskPruning(
         mps, _tileMesh, 10, pp);
-    MyMesh PoissonMesh;
-    vcg::tri::RequirePerVertexNormal<MyMesh>(PoissonMesh);
+    vcg::tri::RequirePerVertexNormal<MyMesh>(_diskSamplePoints);
 
-    vcg::tri::Allocator<MyMesh>::AddVertices(PoissonMesh, mps.sampleVec.size());
+    vcg::tri::Allocator<MyMesh>::AddVertices(_diskSamplePoints, mps.sampleVec.size());
 
     for (size_t i = 0; i < mps.sampleVec.size(); ++i) {
-        PoissonMesh.vert[i].P() = mps.sampleVec[i]->cP();
-        PoissonMesh.vert[i].N() = mps.sampleVec[i]->cN();
+        _diskSamplePoints.vert[i].P() = mps.sampleVec[i]->cP();
+        _diskSamplePoints.vert[i].N() = mps.sampleVec[i]->cN();
     }
 
-    vcg::tri::UpdateNormal<MyMesh>::NormalizePerVertex(PoissonMesh);
+    vcg::tri::UpdateNormal<MyMesh>::NormalizePerVertex(_diskSamplePoints);
     vcg::tri::UpdateNormal<MyMesh>::NormalizePerVertex(_tileMesh);
 
     // 设置关联方式
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
-    for (size_t i = 0; i < PoissonMesh.vert.size(); i++) {
+    for (size_t i = 0; i < _diskSamplePoints.vert.size(); i++) {
 
         bool isWithin = boost::geometry::within(
-            point_type(PoissonMesh.vert[i].P()[0], PoissonMesh.vert[i].P()[1]), rangePolygon);
+            point_type(_diskSamplePoints.vert[i].P()[0], _diskSamplePoints.vert[i].P()[1]),
+            rangePolygon);
         if (!isWithin) continue;
-        osg::ref_ptr<osg::Sphere> sphere = new osg::Sphere(
-            {PoissonMesh.vert[i].P()[0], PoissonMesh.vert[i].P()[1], PoissonMesh.vert[i].P()[2]},
+        osg::ref_ptr<osg::Sphere> sphere = new osg::Sphere({_diskSamplePoints.vert[i].P()[0],
+                                                                   _diskSamplePoints.vert[i].P()[1],
+                                                                   _diskSamplePoints.vert[i].P()[2]},
             1.0f);
         osg::ref_ptr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(sphere);
 
