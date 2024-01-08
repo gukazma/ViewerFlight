@@ -25,9 +25,9 @@ void Resize(double width_, double height_);
 void DrawRange();
 void DrawAirspaceRange();
 void PossionDiskSample();
-void                        UpdateDiskPointsNormal();
+void                        UpdateDiskPointsNormals();
 void                        ShowDiskPoints(bool flag_);
-void                        ShowDiskPointsNormal(bool flag_);
+void                        ShowDiskPointsNormals(bool flag_);
 void                        ShowAirspace(bool flag_);
 
 

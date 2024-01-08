@@ -19,6 +19,7 @@
 #include <osgEarth/SpatialReference>
 #include <osgViewer/Viewer>
 #include <osg/BlendFunc>
+#include <osg/LineWidth>
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
@@ -258,7 +259,7 @@ void ShowDiskPoints(bool flag_) {
     }
 }
 
-void ShowDiskPointsNormal(bool flag_) {
+void ShowDiskPointsNormals(bool flag_) {
     if (!_normalNode) {
         _normalNode = new osgEarth::GeoTransform();
         _normalNode->setNodeMask(0);
@@ -294,6 +295,7 @@ void PossionDiskSample() {
             // 查询海拔高度
             osgEarth::ElevationQuery elevationQuery(_mapNode->getMap());
             double                   elevation = 0.0;
+            if (!_layerBoudingBox || !_layerGeoPoint) return;
             elevationQuery.getElevation(*_layerGeoPoint, elevation);
             auto geopoint = *_layerGeoPoint;
             geopoint.z()  = elevation - _layerBoudingBox->zMin();
@@ -302,16 +304,67 @@ void PossionDiskSample() {
             _diskPointNode->setPosition(geopoint);
             osgEarth::Registry::shaderGenerator().run(points);
             _diskPointNode->addChild(points);
+
+            UpdateDiskPointsNormals();
         }
     }
 }
 
-void UpdateDiskPointsNormal()
+void UpdateDiskPointsNormals()
 {
     if (!_normalNode) {
         _normalNode = new osgEarth::GeoTransform();
         _normalNode->setNodeMask(0);
+        _root->addChild(_normalNode);
     }
+    if (_normalNode->getNumChildren()) {
+        _normalNode->removeChild(0, _normalNode->getNumChildren());
+    }
+    auto normals = uavmvs::mesh::GetDiskPointsNormals();
+    auto diskPoints = uavmvs::mesh::GetDiskPoints();
+
+    osg::ref_ptr<osg::Vec3Array> vertices = new osg::Vec3Array;
+    for (size_t i = 0; i < diskPoints.size(); i++) {
+        vertices->push_back(diskPoints[i]);
+        vertices->push_back(diskPoints[i] + normals[i]*10);
+    }
+
+    osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+    colors->push_back(osg::Vec4(0.0f, 0.0f, 1.0f, 1.0f));
+
+    osg::ref_ptr<osg::Geometry> norms = new osg::Geometry;
+    norms->setVertexArray(vertices);
+    norms->setColorArray(colors);
+    norms->setColorBinding(osg::Geometry::BIND_OVERALL);
+
+    norms->addPrimitiveSet(new osg::DrawArrays(GL_LINES, 0, vertices->size()));
+
+    osg::ref_ptr<osg::Geode> leaf = new osg::Geode;
+    // Make sure to deactivate the lighting
+    leaf->getOrCreateStateSet()->setMode(GL_LIGHTING,
+                                         osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED);
+
+     // 设置线宽
+    osg::ref_ptr<osg::LineWidth> lineWidth = new osg::LineWidth;
+    lineWidth->setWidth(5.0f);   // 设置线宽为 5
+    leaf->getOrCreateStateSet()->setAttribute(lineWidth, osg::StateAttribute::ON);
+
+    leaf->addDrawable(norms);
+
+
+    _normalNode->setTerrain(_mapNode->getTerrain());
+    // 查询海拔高度
+    if (!_layerBoudingBox || !_layerGeoPoint) return;
+    osgEarth::ElevationQuery elevationQuery(_mapNode->getMap());
+    double                   elevation = 0.0;
+    elevationQuery.getElevation(*_layerGeoPoint, elevation);
+    auto geopoint = *_layerGeoPoint;
+    geopoint.z()  = elevation - _layerBoudingBox->zMin();
+    osgEarth::Viewpoint vp;
+    vp.focalPoint() = geopoint;
+    _normalNode->setPosition(geopoint);
+    osgEarth::Registry::shaderGenerator().run(leaf);
+    _normalNode->addChild(leaf);
 
 }
 

@@ -216,7 +216,11 @@ osg::ref_ptr<osg::Geode> PossionDisk()
         bool isWithin = boost::geometry::within(
             point_type(_diskSamplePoints.vert[i].P()[0], _diskSamplePoints.vert[i].P()[1]),
             rangePolygon);
-        if (!isWithin) continue;
+        if (!isWithin)
+        {
+            _diskSamplePoints.vert[i].SetD();
+            continue;
+        }
         osg::ref_ptr<osg::Sphere> sphere = new osg::Sphere({_diskSamplePoints.vert[i].P()[0],
                                                                    _diskSamplePoints.vert[i].P()[1],
                                                                    _diskSamplePoints.vert[i].P()[2]},
@@ -318,19 +322,23 @@ std::vector<osg::Vec3> GetDiskPoints()
 {
     std::vector<osg::Vec3> rnt;
     for (size_t i = 0; i < _diskSamplePoints.VertexNumber(); i++) {
-        rnt.push_back({_diskSamplePoints.vert[i].P().X(),
-                       _diskSamplePoints.vert[i].P().Y(),
-                       _diskSamplePoints.vert[i].P().Z()});
+        if (!_diskSamplePoints.vert[i].IsD()) {
+            rnt.push_back({_diskSamplePoints.vert[i].P().X(),
+                           _diskSamplePoints.vert[i].P().Y(),
+                           _diskSamplePoints.vert[i].P().Z()});
+        }
     }
     return rnt;
 }
-std::vector<osg::Vec3> GetDiskPointsNormal()
+std::vector<osg::Vec3> GetDiskPointsNormals()
 {
     std::vector<osg::Vec3> rnt;
     for (size_t i = 0; i < _diskSamplePoints.VertexNumber(); i++) {
-        rnt.push_back({_diskSamplePoints.vert[i].N().X(),
-                       _diskSamplePoints.vert[i].N().Y(),
-                       _diskSamplePoints.vert[i].N().Z()});
+        if (!_diskSamplePoints.vert[i].IsD()) {
+            rnt.push_back({_diskSamplePoints.vert[i].N().X(),
+                           _diskSamplePoints.vert[i].N().Y(),
+                           _diskSamplePoints.vert[i].N().Z()});
+        }
     }
     return rnt;
 }

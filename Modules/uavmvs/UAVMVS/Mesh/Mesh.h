@@ -12,7 +12,7 @@ bool IsGeneratedTileMesh();
 osg::ref_ptr<osg::Geode> PossionDisk();
 osg::ref_ptr<osg::Geode> GenerateAirspace();
 std::vector<osg::Vec3>   GetDiskPoints();
-std::vector<osg::Vec3>   GetDiskPointsNormal();
+std::vector<osg::Vec3>   GetDiskPointsNormals();
 void                     FilterAirspaceRange();
 }
 

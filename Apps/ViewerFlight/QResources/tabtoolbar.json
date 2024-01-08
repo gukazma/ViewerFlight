@@ -95,7 +95,7 @@
             {
               "itemType":"action",
               "type":"delayedPopup",
-              "name":"actionShowNormal"
+              "name":"actionShowNormals"
             }
           ]
         }

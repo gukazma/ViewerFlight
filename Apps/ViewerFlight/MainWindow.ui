@@ -121,7 +121,7 @@
     <string>显示采样点</string>
    </property>
   </action>
-  <action name="actionShowNormal">
+  <action name="actionShowNormals">
    <property name="checkable">
     <bool>true</bool>
    </property>
