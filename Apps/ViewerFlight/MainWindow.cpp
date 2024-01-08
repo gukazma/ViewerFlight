@@ -74,21 +74,24 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
     connect(ui->actionDrawRange, &QAction::triggered, [=]() { uavmvs::context::DrawRange(); });
     connect(ui->actionViewReset, &QAction::triggered, [=]() { uavmvs::context::HomeLayerView(); });
     connect(
-        ui->actionAirspace, &QAction::triggered, [=]() { uavmvs::context::GenerateAirspace(); });
+        ui->actionAirspace, &QAction::triggered, [=]() { 
+            auto rangePoly = uavmvs::context::GetAirspaceRange();
+            if (rangePoly.size() <= 2) {
+                QMessageBox::critical(nullptr, "Error", QString::fromLocal8Bit("请先绘制安全罩范围"));
+                return;
+            }
+            visitTile();
+            uavmvs::context::GenerateAirspace();
+        });
     connect(
         ui->actionDrawAirspaceRange, &QAction::triggered, [=]() { uavmvs::context::DrawAirspaceRange(); });
     connect(ui->actionPossionDisk, &QAction::triggered, [=]() { 
         auto rangePoly = uavmvs::context::GetRangePolygon();
         if (rangePoly.size() <= 2) {
-            QMessageBox::critical(nullptr, "Error", QString::fromLocal8Bit("请先绘制模型范围"));
+            QMessageBox::critical(nullptr, "Error", QString::fromLocal8Bit("请先绘制采样范围"));
             return;
         }
-        auto geoms = uavmvs::context::VisitTile();
-        m_futureWather.setFuture(QtConcurrent::map(geoms, &uavmvs::context::AppendTile));
-        m_prgDialog->setVisible(true);
-        m_prgDialog->exec();
-        m_futureWather.waitForFinished();
-
+        visitTile();
         std::vector<int> tasks = {1};
         m_futureWather.setFuture(QtConcurrent::map(tasks, [&](int) {
               uavmvs::context::PossionDiskSample(); 
@@ -198,6 +201,18 @@ void MainWindow::createProgressDialog() {
                 m_prgDialog,
                 &QProgressDialog::setValue);
     }
+}
+
+void MainWindow::visitTile() {
+
+    if (uavmvs::context::IsGeneratedTileMesh()) {
+        return;
+    }
+    auto geoms = uavmvs::context::VisitTile();
+    m_futureWather.setFuture(QtConcurrent::map(geoms, &uavmvs::context::AppendTile));
+    m_prgDialog->setVisible(true);
+    m_prgDialog->exec();
+    m_futureWather.waitForFinished();
 }
 
 

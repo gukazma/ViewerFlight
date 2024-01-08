@@ -43,6 +43,8 @@ EventHandler::EventHandler(osg::ref_ptr<osg::Group>        root_,
 bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
     auto lineDrawable = isdrawAirspace ? m_airspaceLinedrawable : m_linedrawable;
+    auto& rangeStack   = isdrawAirspace ? m_airspaceRangeStack : m_rangeStack;
+
     if (ea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK &&
         ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && isOpen) {
         osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
@@ -62,7 +64,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 lineDrawable->pushVertex(lineDrawable->getVertex(0));
                 lineDrawable->setCount(lineDrawable->size());
             }
-            m_rangeStack.push_back(m_rangeStack[0]);
+            rangeStack.push_back(rangeStack[0]);
             lineDrawable->dirty();
             lineDrawable->dirtyGLObjects();
             isOpen = false;
@@ -108,7 +110,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                     lineDrawable->pushVertex(worldIntersectPoint);
                     lineDrawable->setCount(lineDrawable->size());
                 }
-                m_rangeStack.push_back(loclIntersectionPoint);
+                rangeStack.push_back(loclIntersectionPoint);
                 lineDrawable->dirty();
                 lineDrawable->dirtyGLObjects();
             }
@@ -131,12 +133,12 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
             if (count <= 2) {
                 lineDrawable->setCount(0);
                 lineDrawable->clear();
-                m_rangeStack.clear();
+                rangeStack.clear();
                 isOpen = false;
             }
             else {
                 lineDrawable->setCount(count);
-                m_rangeStack.pop_back();
+                rangeStack.pop_back();
             }
             lineDrawable->dirty();
             lineDrawable->dirtyGLObjects();

@@ -24,9 +24,10 @@ protected:
     virtual void resizeEvent(QResizeEvent* event) override;
     void dropEvent(QDropEvent* event_) override;
 
+private:
     void addLayer(const QString& dir_);
-
     void createProgressDialog();
+    void visitTile();
 
 private:
     Ui::MainWindow *ui;

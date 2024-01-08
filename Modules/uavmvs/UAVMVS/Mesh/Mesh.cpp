@@ -167,6 +167,11 @@ void SaveTile(const boost::filesystem::path& path_)
     vcg::tri::io::ExporterPLY<MyMesh>::Save(_tileMesh, path_.generic_string().c_str());
 }
 
+bool IsGeneratedTileMesh()
+{
+    return _tileMesh.VertexNumber();
+}
+
 osg::ref_ptr<osg::Geode> PossionDisk()
 {
     std::vector<osg::Vec3> rangePoints = uavmvs::context::GetRangePolygon();
@@ -216,7 +221,7 @@ osg::ref_ptr<osg::Geode> PossionDisk()
 
         // 设置球体的颜色
         osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-        colors->push_back(osg::Vec4(0.0f, 1.0f, 0.0f, 1.0f));   // 红色
+        colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));   // 红色
         shapeDrawable->setColorArray(colors);
         shapeDrawable->setColorBinding(osg::Geometry::BIND_OVERALL);
         geode->addDrawable(shapeDrawable);

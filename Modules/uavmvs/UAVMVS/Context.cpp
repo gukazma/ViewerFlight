@@ -195,6 +195,9 @@ void AppendTile(osg::Geometry* geom) {
     if (!geom) return;
     uavmvs::mesh::AppendTile(geom);
 }
+bool IsGeneratedTileMesh() {
+    return uavmvs::mesh::IsGeneratedTileMesh();
+}
 void GenerateAirspace() {
     auto geode = uavmvs::mesh::GenerateAirspace();
 
@@ -261,6 +264,13 @@ std::vector<osg::Vec3> GetRangePolygon()
 {
     if (_eventHandler) {
         return _eventHandler->m_rangeStack;
+    }
+    return std::vector<osg::Vec3>();
+}
+std::vector<osg::Vec3> GetAirspaceRange()
+{
+    if (_eventHandler) {
+        return _eventHandler->m_airspaceRangeStack;
     }
     return std::vector<osg::Vec3>();
 }

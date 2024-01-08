@@ -19,11 +19,13 @@ void HomeLayerView();
 void GenerateAirspace();
 std::vector<osg::Geometry*> VisitTile();
 void AppendTile(osg::Geometry* geom);
+bool IsGeneratedTileMesh();
 void Destory();
 void Resize(double width_, double height_);
 void DrawRange();
 void DrawAirspaceRange();
 void PossionDiskSample();
-std::vector<osg::Vec3> GetRangePolygon();
+std::vector<osg::Vec3>      GetRangePolygon();
+std::vector<osg::Vec3>      GetAirspaceRange();
 }
 }
