@@ -212,6 +212,7 @@ osg::ref_ptr<osg::Geode> PossionDisk()
 
     // 设置关联方式
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
+    vcg::Point3f             up    = {0, 0, 1};
     for (size_t i = 0; i < _diskSamplePoints.vert.size(); i++) {
 
         bool isWithin = boost::geometry::within(
@@ -222,6 +223,14 @@ osg::ref_ptr<osg::Geode> PossionDisk()
             _diskSamplePoints.vert[i].SetD();
             continue;
         }
+
+        auto normal = _diskSamplePoints.vert[i].N();
+
+        if ((normal * up) < 0) {
+            _diskSamplePoints.vert[i].SetD();
+            continue;
+        }
+
         osg::ref_ptr<osg::Sphere> sphere = new osg::Sphere({_diskSamplePoints.vert[i].P()[0],
                                                                    _diskSamplePoints.vert[i].P()[1],
                                                                    _diskSamplePoints.vert[i].P()[2]},
