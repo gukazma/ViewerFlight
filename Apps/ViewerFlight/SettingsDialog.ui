@@ -52,6 +52,19 @@
          <string>相机参数</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="1">
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_focal">
+           <property name="maximum">
+            <double>2.000000000000000</double>
+           </property>
+           <property name="singleStep">
+            <double>0.010000000000000</double>
+           </property>
+           <property name="value">
+            <double>0.860000000000000</double>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="label_2">
            <property name="minimumSize">
@@ -65,16 +78,23 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBox_focal">
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>传感器尺寸：</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_cmosSize">
            <property name="maximum">
-            <double>2.000000000000000</double>
+            <double>10.000000000000000</double>
            </property>
            <property name="singleStep">
             <double>0.010000000000000</double>
            </property>
            <property name="value">
-            <double>0.860000000000000</double>
+            <double>1.500000000000000</double>
            </property>
           </widget>
          </item>

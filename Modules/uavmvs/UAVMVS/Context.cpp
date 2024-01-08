@@ -20,6 +20,7 @@
 #include <osgViewer/Viewer>
 #include <osg/BlendFunc>
 #include <osg/LineWidth>
+#include <osg/ShapeDrawable>
 #include <boost/dll.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
@@ -52,6 +53,7 @@ DrawableVistor                                                      _visitor;
 osg::ref_ptr<osgEarth::GeoTransform>                                 _diskPointNode;
 osg::ref_ptr<osgEarth::GeoTransform>                                 _airspaceNode;
 osg::ref_ptr<osgEarth::GeoTransform>                                 _normalNode;
+osg::ref_ptr<osgEarth::GeoTransform>                                 _waypointsNode;
 std::shared_ptr<::uavmvs::context::Settings>                         _settings;
 namespace uavmvs {
 namespace context {
@@ -291,6 +293,57 @@ void ShowAirspace(bool flag_) {
     else {
         _airspaceNode->setNodeMask(0);
     }
+}
+
+void GenerateWaypoints() {
+    if (!_waypointsNode) {
+        _waypointsNode = new osgEarth::GeoTransform();
+        _root->addChild(_waypointsNode);
+    }
+    if (_waypointsNode->getNumChildren()) {
+        _waypointsNode->removeChild(0, _waypointsNode->getNumChildren());
+    }
+
+    auto points = uavmvs::mesh::GetDiskPoints();
+    auto normals = uavmvs::mesh::GetDiskPointsNormals();
+    osg::Vec3 up      = {0, 0, 1.0};
+    osg::ref_ptr<osg::Geode> geode   = new osg::Geode();
+    double                   d       = GetSettings()->getDistance();
+    for (size_t i = 0; i < points.size(); i++) {
+        auto      normal  = normals[i];
+        auto      point   = points[i];
+        normal.normalize();
+        osg::Vec3 forward = -normal;
+        osg::Vec3 side    = up ^ forward;
+        side.normalize();
+        side *= 10;
+        side += (point + normal * d);
+        osg::ref_ptr<osg::Sphere>        sphere        = new osg::Sphere(side,
+                                                           0.5f);
+        osg::ref_ptr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(sphere);
+
+        // 设置球体的颜色
+        osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+        colors->push_back(osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f));   // 红色
+        shapeDrawable->setColorArray(colors);
+        shapeDrawable->setColorBinding(osg::Geometry::BIND_OVERALL);
+        geode->addDrawable(shapeDrawable);
+    }
+
+    _waypointsNode->setTerrain(_mapNode->getTerrain());
+    // 查询海拔高度
+    osgEarth::ElevationQuery elevationQuery(_mapNode->getMap());
+    double                   elevation = 0.0;
+    if (!_layerBoudingBox || !_layerGeoPoint) return;
+    elevationQuery.getElevation(*_layerGeoPoint, elevation);
+    auto geopoint = *_layerGeoPoint;
+    geopoint.z()  = elevation - _layerBoudingBox->zMin();
+    osgEarth::Viewpoint vp;
+    vp.focalPoint() = geopoint;
+    _waypointsNode->setPosition(geopoint);
+    osgEarth::Registry::shaderGenerator().run(geode);
+    _waypointsNode->addChild(geode);
+
 }
 
 void PossionDiskSample() {

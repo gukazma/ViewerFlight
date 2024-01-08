@@ -87,7 +87,9 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
     connect(ui->actionShowNormals, &QAction::triggered, [=](bool checked) {
         uavmvs::context::ShowDiskPointsNormals(checked);
     });
-
+    connect(ui->actionGenerateWaypoints, &QAction::triggered, [=](bool checked) {
+        uavmvs::context::GenerateWaypoints();
+    });
     connect(
         ui->actionAirspace, &QAction::triggered, [=]() { 
             auto rangePoly = uavmvs::context::GetAirspaceRange();

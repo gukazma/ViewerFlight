@@ -33,6 +33,7 @@ void                        UpdateDiskPointsNormals();
 void                        ShowDiskPoints(bool flag_);
 void                        ShowDiskPointsNormals(bool flag_);
 void                        ShowAirspace(bool flag_);
+void                        GenerateWaypoints();
 
 
 std::vector<osg::Vec3>      GetRangePolygon();
