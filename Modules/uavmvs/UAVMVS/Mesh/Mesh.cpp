@@ -21,6 +21,7 @@
 #include <boost/geometry.hpp>
 #include <mutex>
 #include "UAVMVS/Context.hpp"
+#include "UAVMVS/Settings.h"
 class MyVertex;
 class MyEdge;
 class MyFace;
@@ -196,7 +197,7 @@ osg::ref_ptr<osg::Geode> PossionDisk()
 
     vcg::tri::TrivialPointerSampler<MyMesh> mps;
     vcg::tri::SurfaceSampling<MyMesh, vcg::tri::TrivialPointerSampler<MyMesh>>::PoissonDiskPruning(
-        mps, _tileMesh, 10, pp);
+        mps, _tileMesh, uavmvs::context::GetSettings()->diskRadius, pp);
     vcg::tri::RequirePerVertexNormal<MyMesh>(_diskSamplePoints);
 
     vcg::tri::Allocator<MyMesh>::AddVertices(_diskSamplePoints, mps.sampleVec.size());

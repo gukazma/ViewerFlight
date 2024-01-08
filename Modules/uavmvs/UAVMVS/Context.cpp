@@ -33,6 +33,7 @@
 #include "Utils/EventHandler.h"
 #include "Utils/DrawableVisitor.h"
 #include "UAVMVS/Mesh/Mesh.h"
+#include "Settings.h"
 #include <osgEarth/PointDrawable>
 
 
@@ -51,9 +52,19 @@ DrawableVistor                                                      _visitor;
 osg::ref_ptr<osgEarth::GeoTransform>                                 _diskPointNode;
 osg::ref_ptr<osgEarth::GeoTransform>                                 _airspaceNode;
 osg::ref_ptr<osgEarth::GeoTransform>                                 _normalNode;
-
+std::shared_ptr<::uavmvs::context::Settings>                         _settings;
 namespace uavmvs {
 namespace context {
+void AttachSettings(std::shared_ptr<Settings> settings_) {
+    _settings.reset();
+    _settings = settings_;
+}
+std::shared_ptr<::uavmvs::context::Settings> GetSettings() {
+    if (!_settings) {
+        _settings = std::make_shared<::uavmvs::context::Settings>();
+    }
+    return _settings;
+}
 void Init()
 {
     osgEarth::initialize();

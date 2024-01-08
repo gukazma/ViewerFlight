@@ -15,6 +15,8 @@ public:
     explicit SettingsDialog(QWidget *parent = nullptr);
     ~SettingsDialog();
 
+    void updateSettings();
+
 private:
     Ui::SettingsDialog *ui;
 };

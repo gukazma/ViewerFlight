@@ -4,10 +4,14 @@
 #include <QString>
 #include <functional>
 #include <boost/filesystem/path.hpp>
+#include <memory>
 namespace uavmvs
 {
 namespace context
 {
+struct Settings;
+void AttachSettings(std::shared_ptr<Settings> settings_);
+std::shared_ptr<::uavmvs::context::Settings> GetSettings();
 void Init();
 void Attach(osgViewer::Viewer* viewer_);
 void View(const osgEarth::Viewpoint& viewpoint, int delta);
