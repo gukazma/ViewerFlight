@@ -29,10 +29,20 @@ EventHandler::EventHandler(osg::ref_ptr<osg::Group>        root_,
     m_linedrawable->setStippleFactor(1);
     m_linedrawable->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
     m_linedrawable->getOrCreateStateSet()->setRenderBinDetails(0, "RenderBin");
+
+    m_airspaceLinedrawable = new osgEarth::LineDrawable(GL_LINE_STRIP);
+    m_mapNode->addChild(m_airspaceLinedrawable);
+    m_airspaceLinedrawable->setColor(osgEarth::Color::Cyan);
+    m_airspaceLinedrawable->setLineWidth(5.0);
+    m_airspaceLinedrawable->setStipplePattern(0xF0F0);
+    m_airspaceLinedrawable->setStippleFactor(1);
+    m_airspaceLinedrawable->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+    m_airspaceLinedrawable->getOrCreateStateSet()->setRenderBinDetails(0, "RenderBin");
 }
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa)
 {
+    auto lineDrawable = isdrawAirspace ? m_airspaceLinedrawable : m_linedrawable;
     if (ea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK &&
         ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && isOpen) {
         osgViewer::Viewer* viewer = dynamic_cast<osgViewer::Viewer*>(&aa);
@@ -40,21 +50,21 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
             osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
                 new osgUtil::LineSegmentIntersector(
                     osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
-            if (m_linedrawable->size() == 0) {
+            if (lineDrawable->size() == 0) {
                 return false;
             }
-            if (m_linedrawable->size() != 1 &&
-                m_linedrawable->getCount() < m_linedrawable->size()) {
-                m_linedrawable->setVertex(m_linedrawable->getCount(), m_linedrawable->getVertex(0));
-                m_linedrawable->setCount(m_linedrawable->getCount() + 1);
+            if (lineDrawable->size() != 1 &&
+                lineDrawable->getCount() < lineDrawable->size()) {
+                lineDrawable->setVertex(lineDrawable->getCount(), lineDrawable->getVertex(0));
+                lineDrawable->setCount(lineDrawable->getCount() + 1);
             }
             else {
-                m_linedrawable->pushVertex(m_linedrawable->getVertex(0));
-                m_linedrawable->setCount(m_linedrawable->size());
+                lineDrawable->pushVertex(lineDrawable->getVertex(0));
+                lineDrawable->setCount(lineDrawable->size());
             }
             m_rangeStack.push_back(m_rangeStack[0]);
-            m_linedrawable->dirty();
-            m_linedrawable->dirtyGLObjects();
+            lineDrawable->dirty();
+            lineDrawable->dirtyGLObjects();
             isOpen = false;
         }
 
@@ -89,18 +99,18 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 osg::Vec3 worldIntersectNormal   = intersection.getWorldIntersectNormal();
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal   = intersection.getLocalIntersectNormal();
-                if (m_linedrawable->size() != 1 &&
-                    m_linedrawable->getCount() < m_linedrawable->size()) {
-                    m_linedrawable->setVertex(m_linedrawable->getCount(), worldIntersectPoint);
-                    m_linedrawable->setCount(m_linedrawable->getCount() + 1);
+                if (lineDrawable->size() != 1 &&
+                    lineDrawable->getCount() < lineDrawable->size()) {
+                    lineDrawable->setVertex(lineDrawable->getCount(), worldIntersectPoint);
+                    lineDrawable->setCount(lineDrawable->getCount() + 1);
                 }
                 else {
-                    m_linedrawable->pushVertex(worldIntersectPoint);
-                    m_linedrawable->setCount(m_linedrawable->size());
+                    lineDrawable->pushVertex(worldIntersectPoint);
+                    lineDrawable->setCount(lineDrawable->size());
                 }
                 m_rangeStack.push_back(loclIntersectionPoint);
-                m_linedrawable->dirty();
-                m_linedrawable->dirtyGLObjects();
+                lineDrawable->dirty();
+                lineDrawable->dirtyGLObjects();
             }
         }
 
@@ -114,22 +124,22 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
             osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector =
                 new osgUtil::LineSegmentIntersector(
                     osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
-            int count = m_linedrawable->getCount() - 1 < 0 ? 0 : m_linedrawable->getCount() - 1;
+            int count = lineDrawable->getCount() - 1 < 0 ? 0 : lineDrawable->getCount() - 1;
             if (!isOpen) {
                 isOpen = true;
             }
             if (count <= 2) {
-                m_linedrawable->setCount(0);
-                m_linedrawable->clear();
+                lineDrawable->setCount(0);
+                lineDrawable->clear();
                 m_rangeStack.clear();
                 isOpen = false;
             }
             else {
-                m_linedrawable->setCount(count);
+                lineDrawable->setCount(count);
                 m_rangeStack.pop_back();
             }
-            m_linedrawable->dirty();
-            m_linedrawable->dirtyGLObjects();
+            lineDrawable->dirty();
+            lineDrawable->dirtyGLObjects();
         }
 
         return true;
@@ -157,32 +167,33 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
                 osg::Vec3 worldIntersectNormal  = intersection.getWorldIntersectNormal();
                 osg::Vec3 loclIntersectionPoint = intersection.getLocalIntersectPoint();
                 osg::Vec3 localIntersectNormal  = intersection.getLocalIntersectNormal();
-                if (m_linedrawable->size() == 0 || m_linedrawable->getCount()==0) return false;
-                if (m_linedrawable->getCount() == 1)
+                if (lineDrawable->size() == 0 || lineDrawable->getCount()==0) return false;
+                if (lineDrawable->getCount() == 1)
                 {
-                    m_linedrawable->pushVertex(worldIntersectPoint);
-                    m_linedrawable->setCount(2);
-                    m_linedrawable->dirty();
-                    m_linedrawable->dirtyGLObjects();
+                    lineDrawable->pushVertex(worldIntersectPoint);
+                    lineDrawable->setCount(2);
+                    lineDrawable->dirty();
+                    lineDrawable->dirtyGLObjects();
                     return true;
                 }
-                m_linedrawable->setVertex(m_linedrawable->getCount() - 1, worldIntersectPoint);
-                m_linedrawable->dirty();
-                m_linedrawable->dirtyGLObjects();
+                lineDrawable->setVertex(lineDrawable->getCount() - 1, worldIntersectPoint);
+                lineDrawable->dirty();
+                lineDrawable->dirtyGLObjects();
             }
         }
 
         return true;
     }
 
-
-    
-
-    
     return false;
 }
 
 void EventHandler::clear() {
-    m_linedrawable->clear();
-    m_mapNode->removeChild(m_linedrawable);
+    auto lineDrawable = isdrawAirspace ? m_airspaceLinedrawable : m_linedrawable;
+    auto& rangeStack   = isdrawAirspace ? m_airspaceRangeStack : m_rangeStack;
+    rangeStack.clear();
+    lineDrawable->clear();
+    lineDrawable->dirty();
+    lineDrawable->dirtyGLObjects();
+    //m_mapNode->removeChild(m_linedrawable);
 }

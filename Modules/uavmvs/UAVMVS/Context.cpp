@@ -227,6 +227,13 @@ void Resize(double width_, double height_) {
 void DrawRange()
 {
     _eventHandler->isOpen = true;
+    _eventHandler->isdrawAirspace = false;
+    _eventHandler->clear();
+}
+void DrawAirspaceRange() {
+    _eventHandler->isOpen         = true;
+    _eventHandler->isdrawAirspace = true;
+    _eventHandler->clear();
 }
 void PossionDiskSample() {
     if (_currentTile) {

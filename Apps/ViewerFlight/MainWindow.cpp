@@ -73,7 +73,10 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
 
     connect(ui->actionDrawRange, &QAction::triggered, [=]() { uavmvs::context::DrawRange(); });
     connect(ui->actionViewReset, &QAction::triggered, [=]() { uavmvs::context::HomeLayerView(); });
-    connect(ui->actionAirspace, &QAction::triggered, [=]() { uavmvs::context::GenerateAirspace(); });
+    connect(
+        ui->actionAirspace, &QAction::triggered, [=]() { uavmvs::context::GenerateAirspace(); });
+    connect(
+        ui->actionDrawAirspaceRange, &QAction::triggered, [=]() { uavmvs::context::DrawAirspaceRange(); });
     connect(ui->actionPossionDisk, &QAction::triggered, [=]() { 
         auto rangePoly = uavmvs::context::GetRangePolygon();
         if (rangePoly.size() <= 2) {

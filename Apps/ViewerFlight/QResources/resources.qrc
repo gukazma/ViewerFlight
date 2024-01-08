@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>Icons/edit_row_30px.png</file>
     <file>Icons/bank_building_30px.png</file>
     <file>Icons/worldwide_location_30px.png</file>
     <file>Icons/braille_30px.png</file>

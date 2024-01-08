@@ -22,7 +22,8 @@ void AppendTile(osg::Geometry* geom);
 void Destory();
 void Resize(double width_, double height_);
 void DrawRange();
+void DrawAirspaceRange();
 void PossionDiskSample();
-std::vector<osg::Vec3>      GetRangePolygon();
+std::vector<osg::Vec3> GetRangePolygon();
 }
 }

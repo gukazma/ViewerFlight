@@ -29,6 +29,11 @@
             {
               "itemType":"action",
               "type":"delayedPopup",
+              "name":"actionDrawAirspaceRange"
+            },
+            {
+              "itemType":"action",
+              "type":"delayedPopup",
               "name":"actionAirspace"
             }
           ]

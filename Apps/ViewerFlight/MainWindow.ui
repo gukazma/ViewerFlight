@@ -76,6 +76,18 @@
     <string>安全罩</string>
    </property>
   </action>
+  <action name="actionDrawAirspaceRange">
+   <property name="icon">
+    <iconset resource="QResources/resources.qrc">
+     <normaloff>:/Icons/edit_row_30px.png</normaloff>:/Icons/edit_row_30px.png</iconset>
+   </property>
+   <property name="text">
+    <string>选择安全罩范围</string>
+   </property>
+   <property name="toolTip">
+    <string>选择安全罩范围</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
