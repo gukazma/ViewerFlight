@@ -49,7 +49,7 @@ std::shared_ptr<osg::BoundingBox>                                    _layerBoudi
 DrawableVistor                                                      _visitor;
 osg::ref_ptr<osgEarth::GeoTransform>                                 _diskPointNode;
 osg::ref_ptr<osgEarth::GeoTransform>                                 _airspaceNode;
-osg::ref_ptr<osgEarth::GeoTransform>                                 _nromalNode;
+osg::ref_ptr<osgEarth::GeoTransform>                                 _normalNode;
 
 namespace uavmvs {
 namespace context {
@@ -258,6 +258,19 @@ void ShowDiskPoints(bool flag_) {
     }
 }
 
+void ShowDiskPointsNormal(bool flag_) {
+    if (!_normalNode) {
+        _normalNode = new osgEarth::GeoTransform();
+        _normalNode->setNodeMask(0);
+    }
+    if (flag_) {
+        _normalNode->setNodeMask(0xffffffff);
+    }
+    else {
+        _normalNode->setNodeMask(0);
+    }
+}
+
 void ShowAirspace(bool flag_) {
     if (!_airspaceNode) return;
     if (flag_) {
@@ -292,6 +305,17 @@ void PossionDiskSample() {
         }
     }
 }
+
+void UpdateDiskPointsNormal()
+{
+    if (!_normalNode) {
+        _normalNode = new osgEarth::GeoTransform();
+        _normalNode->setNodeMask(0);
+    }
+
+}
+
+
 std::vector<osg::Vec3> GetRangePolygon()
 {
     if (_eventHandler) {

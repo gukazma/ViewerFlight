@@ -314,6 +314,26 @@ osg::ref_ptr<osg::Geode> GenerateAirspace()
     MakeTransparent(geode, 0.5);
     return geode;
 }
+std::vector<osg::Vec3> GetDiskPoints()
+{
+    std::vector<osg::Vec3> rnt;
+    for (size_t i = 0; i < _diskSamplePoints.VertexNumber(); i++) {
+        rnt.push_back({_diskSamplePoints.vert[i].P().X(),
+                       _diskSamplePoints.vert[i].P().Y(),
+                       _diskSamplePoints.vert[i].P().Z()});
+    }
+    return rnt;
+}
+std::vector<osg::Vec3> GetDiskPointsNormal()
+{
+    std::vector<osg::Vec3> rnt;
+    for (size_t i = 0; i < _diskSamplePoints.VertexNumber(); i++) {
+        rnt.push_back({_diskSamplePoints.vert[i].N().X(),
+                       _diskSamplePoints.vert[i].N().Y(),
+                       _diskSamplePoints.vert[i].N().Z()});
+    }
+    return rnt;
+}
 void FilterAirspaceRange() {
     for (int fn = 0; fn < _airspaceMesh.face.size(); fn++) {
         auto& f = _airspaceMesh.face[fn];

@@ -11,6 +11,8 @@ void SaveTile(const boost::filesystem::path& path_);
 bool IsGeneratedTileMesh();
 osg::ref_ptr<osg::Geode> PossionDisk();
 osg::ref_ptr<osg::Geode> GenerateAirspace();
+std::vector<osg::Vec3>   GetDiskPoints();
+std::vector<osg::Vec3>   GetDiskPointsNormal();
 void                     FilterAirspaceRange();
 }
 
