@@ -73,7 +73,12 @@ MainWindow::MainWindow(QWidget *parent_) : QMainWindow(parent_)
 
     connect(ui->actionDrawRange, &QAction::triggered, [=]() { uavmvs::context::DrawRange(); });
     connect(ui->actionViewReset, &QAction::triggered, [=]() { uavmvs::context::HomeLayerView(); });
-    connect(ui->actionShowDiskPoints, &QAction::triggered, [=](bool checked) { uavmvs::context::ShowDiskPoints(checked); });
+    connect(ui->actionShowDiskPoints, &QAction::triggered, [=](bool checked) {
+        uavmvs::context::ShowDiskPoints(checked);
+    });
+    connect(ui->actionShowAirspace, &QAction::triggered, [=](bool checked) {
+        uavmvs::context::ShowAirspace(checked);
+    });
     connect(
         ui->actionAirspace, &QAction::triggered, [=]() { 
             auto rangePoly = uavmvs::context::GetAirspaceRange();

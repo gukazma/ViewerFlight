@@ -47,7 +47,8 @@ std::unordered_map<std::string, std::shared_ptr<osgEarth::GeoPoint>>
     _loadedTileGeoPoint;
 std::shared_ptr<osg::BoundingBox>                                    _layerBoudingBox;
 DrawableVistor                                                      _visitor;
-osg::ref_ptr<osgEarth::GeoTransform> _diskPointNode;
+osg::ref_ptr<osgEarth::GeoTransform>                                 _diskPointNode;
+osg::ref_ptr<osgEarth::GeoTransform>                                 _airspaceNode;
 
 namespace uavmvs {
 namespace context {
@@ -201,11 +202,15 @@ bool IsGeneratedTileMesh() {
 }
 void GenerateAirspace() {
     auto geode = uavmvs::mesh::GenerateAirspace();
-
+    if (!_airspaceNode) {
+        _airspaceNode = new osgEarth::GeoTransform();
+        _root->addChild(_airspaceNode);
+        _airspaceNode->removeChild(0, _airspaceNode->getNumChildren());
+        _airspaceNode->setNodeMask(0);
+    }
     if (geode) {
         if (_diskPointNode) {}
-        osg::ref_ptr<osgEarth::GeoTransform> xform = new osgEarth::GeoTransform();
-        xform->setTerrain(_mapNode->getTerrain());
+        _airspaceNode->setTerrain(_mapNode->getTerrain());
         // 查询海拔高度
         osgEarth::ElevationQuery elevationQuery(_mapNode->getMap());
         double                   elevation = 0.0;
@@ -214,10 +219,9 @@ void GenerateAirspace() {
         geopoint.z()  = elevation - _layerBoudingBox->zMin();
         osgEarth::Viewpoint vp;
         vp.focalPoint() = geopoint;
-        xform->setPosition(geopoint);
+        _airspaceNode->setPosition(geopoint);
         osgEarth::Registry::shaderGenerator().run(geode);
-        xform->addChild(geode);
-        _root->addChild(xform);
+        _airspaceNode->addChild(geode);
     }
 }
 void Destory() {
@@ -250,6 +254,17 @@ void ShowDiskPoints(bool flag_) {
         _diskPointNode->setNodeMask(0);
     }
 }
+
+void ShowAirspace(bool flag_) {
+    if (!_airspaceNode) return;
+    if (flag_) {
+        _airspaceNode->setNodeMask(0xffffffff);
+    }
+    else {
+        _airspaceNode->setNodeMask(0);
+    }
+}
+
 void PossionDiskSample() {
     if (_currentTile) {
         auto points = uavmvs::mesh::PossionDisk();

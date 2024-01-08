@@ -25,7 +25,8 @@ void Resize(double width_, double height_);
 void DrawRange();
 void DrawAirspaceRange();
 void PossionDiskSample();
-void ShowDiskPoints(bool flag_);
+void                        ShowDiskPoints(bool flag_);
+void                        ShowAirspace(bool flag_);
 
 
 std::vector<osg::Vec3>      GetRangePolygon();
