@@ -236,7 +236,7 @@ osg::ref_ptr<osg::Geode> PossionDisk()
         geode->addDrawable(shapeDrawable);
     }
 
-    return geode;
+    return geode.release();
 }
 
 void MakeTransparent(osg::Node* node, float transparencyValue)

@@ -348,7 +348,6 @@ void GenerateWaypoints() {
 
 void PossionDiskSample() {
     if (_currentTile) {
-        auto points = uavmvs::mesh::PossionDisk();
         if (!_diskPointNode) {
             _diskPointNode = new osgEarth::GeoTransform();
             _root->addChild(_diskPointNode);
@@ -356,6 +355,7 @@ void PossionDiskSample() {
         if (_diskPointNode->getNumChildren()) {
             _diskPointNode->removeChild(0, _diskPointNode->getNumChildren());
         }
+        auto points = uavmvs::mesh::PossionDisk();
         if (points) {
             _diskPointNode->setTerrain(_mapNode->getTerrain());
             // 查询海拔高度
