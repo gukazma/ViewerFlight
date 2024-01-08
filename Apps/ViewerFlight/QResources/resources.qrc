@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+    <file>Icons/waypoint_map_30px.png</file>
     <file>Icons/services_30px.png</file>
     <file>Icons/upload_30px.png</file>
     <file>Icons/edit_row_30px.png</file>

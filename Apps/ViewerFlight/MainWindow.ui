@@ -148,6 +148,18 @@
     <string>设置参数</string>
    </property>
   </action>
+  <action name="actionGenerateWaypoints">
+   <property name="icon">
+    <iconset resource="QResources/resources.qrc">
+     <normaloff>:/Icons/waypoint_map_30px.png</normaloff>:/Icons/waypoint_map_30px.png</iconset>
+   </property>
+   <property name="text">
+    <string>生成航线点</string>
+   </property>
+   <property name="toolTip">
+    <string>生成航线点</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

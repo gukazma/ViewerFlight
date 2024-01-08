@@ -40,6 +40,17 @@
               "name":"actionAirspace"
             }
           ]
+        },
+        {
+          "displayName": "航线规划",
+          "name":"UAVMVS",
+          "content":[
+            {
+              "itemType":"action",
+              "type":"delayedPopup",
+              "name":"actionGenerateWaypoints"
+            }
+          ]
         }
 
       ]
