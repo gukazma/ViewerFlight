@@ -6,6 +6,8 @@
 #include <vcg/complex/complex.h>
 #include<vcg/complex/algorithms/point_sampling.h>
 #include<vcg/complex/algorithms/voronoi_processing.h>
+#include <vcg/space/index/kdtree/kdtree.h>
+#include<vcg/complex/algorithms/update/normal.h>
 #include <wrap/io_trimesh/export_off.h>
 #include <wrap/io_trimesh/export_ply.h>
 #include <wrap/io_trimesh/import.h>
@@ -22,6 +24,7 @@
 #include <mutex>
 #include "UAVMVS/Context.hpp"
 #include "UAVMVS/Settings.h"
+#include <unordered_map>
 class MyVertex;
 class MyEdge;
 class MyFace;
@@ -87,9 +90,14 @@ template<> struct hash<vcg::Point3f>
 }   // namespace std
 MyMesh     _tileMesh;
 MyMesh     _airspaceMesh;
-MyMesh     _diskSamplePoints;
+MyMesh                   _diskSamplePoints;
+std::vector<vcg::Point3f>           _waypointsBegin;
+std::vector<vcg::Point3f>           _waypointsEnd;
+
+
 osg::ref_ptr<osg::Geode> _airspaceNode;
 std::mutex _tileMutex;
+std::pair<vcg::Point3f, vcg::Point3f> _wayPointsPair;
 
 namespace uavmvs {
 namespace mesh {
@@ -109,7 +117,7 @@ static void AddSphere(osg::ref_ptr<osg::Geode> geode, osg::Vec3 position, osg::V
 }
 
 
-bool isIntersectionAirspace(osg::Vec3 begin_, osg::Vec3 end_)
+bool IsIntersectionAirspace(osg::Vec3 begin_, osg::Vec3 end_)
 {
     if (!_airspaceNode) {
         return false;
@@ -289,16 +297,12 @@ osg::ref_ptr<osg::Geode> PossionDisk()
             _diskSamplePoints.vert[i].SetD();
             continue;
         }
-
-        osg::ref_ptr<osg::Sphere> sphere = new osg::Sphere({_diskSamplePoints.vert[i].P()[0],
-                                                                   _diskSamplePoints.vert[i].P()[1],
-                                                                   _diskSamplePoints.vert[i].P()[2]},
-            1.0f);
-        osg::ref_ptr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(sphere);
-        shapeDrawable->build();
-
-        shapeDrawable->setColor(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
-        geode->addDrawable(shapeDrawable);
+        AddSphere(geode,
+                  {_diskSamplePoints.vert[i].P()[0],
+                   _diskSamplePoints.vert[i].P()[1],
+                   _diskSamplePoints.vert[i].P()[2]},
+                  osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f),
+                  0.5);
     }
 
     return geode.release();
@@ -311,6 +315,9 @@ osg::ref_ptr<osg::Geode> GetWayPoints()
     osg::Vec3                up      = {0, 0, 1.0};
     osg::ref_ptr<osg::Geode> geode   = new osg::Geode();
     double                   d       = uavmvs::context::GetSettings()->getDistance();
+    //std::vector<vcg::Point3f> waypoints;
+    _waypointsBegin.clear();
+    _waypointsEnd.clear();
     for (size_t i = 0; i < points.size(); i++) {
         auto      normal = -normals[i];
         auto      point  = points[i] + normals[i] * uavmvs::context::GetSettings()->getDistance();
@@ -323,17 +330,61 @@ osg::ref_ptr<osg::Geode> GetWayPoints()
         osg::Vec3 p2 = point - u1 * (s / 2.0) + u2 * (s * std::sqrt(3) / 2);
         osg::Vec3 p3 = point - u2 * (s * std::sqrt(3) / 2);
 
-        if (::uavmvs::mesh::isIntersectionAirspace(points[i], p1)) {
+        if (::uavmvs::mesh::IsIntersectionAirspace(points[i], p1)) {
             AddSphere(geode, p1, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
+            _waypointsBegin.push_back({p1.x(), p1.y(), p1.z()});
+            _waypointsEnd.push_back({points[i].x(), points[i].y(), points[i].z()});
         }
-        if (::uavmvs::mesh::isIntersectionAirspace(points[i], p2)) {
+        if (::uavmvs::mesh::IsIntersectionAirspace(points[i], p2)) {
             AddSphere(geode, p2, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
+            _waypointsBegin.push_back({p2.x(), p2.y(), p2.z()});
+            _waypointsEnd.push_back({points[i].x(), points[i].y(), points[i].z()});
         }
-        if (::uavmvs::mesh::isIntersectionAirspace(points[i], p3)) {
+        if (::uavmvs::mesh::IsIntersectionAirspace(points[i], p3)) {
             AddSphere(geode, p3, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
+            _waypointsBegin.push_back({p2.x(), p2.y(), p2.z()});
+            _waypointsEnd.push_back({points[i].x(), points[i].y(), points[i].z()});
         }
     }
     return geode;
+}
+
+void ReorderWayPoints() {
+    if (_waypointsBegin.size() == 0) return;
+    
+    vcg::ConstDataWrapper<vcg::Point3f> ww(
+        &(_waypointsBegin[0]), _waypointsBegin.size(), sizeof(vcg::Point3f));
+    vcg::KdTree<float>                                     tree(ww);
+    vcg::KdTree<float>::PriorityQueue queue;
+
+    std::vector<vcg::Point3f> newWaypointsBegin;
+    std::vector<vcg::Point3f> newWaypointsEnd;
+    std::vector<int>          isVisited;
+    for (size_t i = 0; i < _waypointsBegin.size(); i++) {
+        isVisited.push_back(0);
+    }
+    vcg::Point3f currentWaypoint = _waypointsBegin[0];
+    newWaypointsBegin.push_back(currentWaypoint);
+    newWaypointsEnd.push_back(_waypointsEnd[0]);
+
+    for (size_t i = 0; i < _waypointsBegin.size(); i++) {
+        tree.doQueryK(currentWaypoint, 5, queue);
+        int   neighbours = queue.getNofElements();
+        for (int i = 0; i < neighbours; i++) {
+            int neightId = queue.getIndex(i);
+            if (!isVisited[neightId])
+            {
+                currentWaypoint = _waypointsBegin[neightId];
+                newWaypointsBegin.push_back(currentWaypoint);
+                newWaypointsEnd.push_back(_waypointsEnd[neightId]);
+                isVisited[neightId] = 1;
+                break;
+            }
+        }
+    }
+
+    _waypointsBegin = newWaypointsBegin;
+    _waypointsEnd = newWaypointsEnd;
 }
 
 void MakeTransparent(osg::Node* node, float transparencyValue)
