@@ -295,18 +295,6 @@ void ShowAirspace(bool flag_) {
     }
 }
 
-static void AddSphere(osg::ref_ptr<osg::Geode> geode, osg::Vec3 position, osg::Vec4 color, float radius)
-{
-    osg::ref_ptr<osg::Sphere>        sphere        = new osg::Sphere(position, radius);
-    osg::ref_ptr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(sphere);
-
-    // 设置球体的颜色
-    osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-    colors->push_back(color);   // 红色
-    shapeDrawable->setColorArray(colors);
-    shapeDrawable->setColorBinding(osg::Geometry::BIND_OVERALL);
-    geode->addDrawable(shapeDrawable);
-}
 
 void GenerateWaypoints() {
     if (!_waypointsNode) {
@@ -317,43 +305,7 @@ void GenerateWaypoints() {
         _waypointsNode->removeChild(0, _waypointsNode->getNumChildren());
     }
 
-    auto points = uavmvs::mesh::GetDiskPoints();
-    auto normals = uavmvs::mesh::GetDiskPointsNormals();
-    osg::Vec3 up      = {0, 0, 1.0};
-    osg::ref_ptr<osg::Geode> geode   = new osg::Geode();
-    double                   d       = GetSettings()->getDistance();
-    for (size_t i = 0; i < points.size(); i++) {
-        auto      normal = -normals[i];
-        auto      point  = points[i] + normals[i] * GetSettings()->getDistance();
-        osg::Vec3 u1     = osg::Vec3(-normal.y(), normal.x(), 0);
-        u1.normalize();
-        osg::Vec3 u2 = u1 ^ normal;
-        u2.normalize();
-        float       s  = GetSettings()->getDistance();
-        osg::Vec3   p1 = point + u1 * (s / 2.0) + u2 * (s * std::sqrt(3) / 2);
-        osg::Vec3   p2 = point - u1 * (s / 2.0) + u2 * (s * std::sqrt(3) / 2);
-        osg::Vec3   p3 = point  - u2 * (s * std::sqrt(3) / 2);
-        
-        //osg::ref_ptr<osg::Sphere>        sphere        = new osg::Sphere(p1,
-        //                                                   0.5f);
-        //osg::ref_ptr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(sphere);
-
-        //// 设置球体的颜色
-        //osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-        //colors->push_back(osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f));   // 红色
-        //shapeDrawable->setColorArray(colors);
-        //shapeDrawable->setColorBinding(osg::Geometry::BIND_OVERALL);
-        //geode->addDrawable(shapeDrawable);
-        if (::uavmvs::mesh::isIntersectionAirspace(points[i], p1)) {
-            AddSphere(geode, p1, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
-        }
-        if (::uavmvs::mesh::isIntersectionAirspace(points[i], p2)) {
-            AddSphere(geode, p2, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
-        }
-        if (::uavmvs::mesh::isIntersectionAirspace(points[i], p3)) {
-            AddSphere(geode, p3, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
-        }
-    }
+    auto geode = uavmvs::mesh::GetWayPoints();
 
     _waypointsNode->setTerrain(_mapNode->getTerrain());
     // 查询海拔高度
