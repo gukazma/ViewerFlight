@@ -5,7 +5,7 @@ namespace uavmvs {
 namespace context {
 double Settings::getDistance()
 {
-    return (focal * diskRadius) / cmosSize;
+    return (focal * diskRadius) / cmosSize * 2.0;
 }
 }   // namespace context
 }   // namespace uavmvs

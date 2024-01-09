@@ -329,7 +329,7 @@ void GenerateWaypoints() {
         u1.normalize();
         osg::Vec3 u2 = u1 ^ normal;
         u2.normalize();
-        float       s  = 1.0f;
+        float       s  = GetSettings()->getDistance();
         osg::Vec3   p1 = point + u1 * (s / 2.0) + u2 * (s * std::sqrt(3) / 2);
         osg::Vec3   p2 = point - u1 * (s / 2.0) + u2 * (s * std::sqrt(3) / 2);
         osg::Vec3   p3 = point  - u2 * (s * std::sqrt(3) / 2);
@@ -344,9 +344,15 @@ void GenerateWaypoints() {
         //shapeDrawable->setColorArray(colors);
         //shapeDrawable->setColorBinding(osg::Geometry::BIND_OVERALL);
         //geode->addDrawable(shapeDrawable);
-        AddSphere(geode, p1, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
-        AddSphere(geode, p2, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
-        AddSphere(geode, p3, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
+        if (::uavmvs::mesh::isIntersectionAirspace(points[i], p1)) {
+            AddSphere(geode, p1, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
+        }
+        if (::uavmvs::mesh::isIntersectionAirspace(points[i], p2)) {
+            AddSphere(geode, p2, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
+        }
+        if (::uavmvs::mesh::isIntersectionAirspace(points[i], p3)) {
+            AddSphere(geode, p3, osg::Vec4(0.0f, 1.0f, 1.0f, 1.0f), 0.5);
+        }
     }
 
     _waypointsNode->setTerrain(_mapNode->getTerrain());

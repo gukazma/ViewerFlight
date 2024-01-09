@@ -88,10 +88,29 @@ template<> struct hash<vcg::Point3f>
 MyMesh     _tileMesh;
 MyMesh     _airspaceMesh;
 MyMesh     _diskSamplePoints;
+osg::ref_ptr<osg::Geode> _airspaceNode;
 std::mutex _tileMutex;
 
 namespace uavmvs {
 namespace mesh {
+
+bool isIntersectionAirspace(osg::Vec3 begin_, osg::Vec3 end_)
+{
+    if (!_airspaceNode) {
+        return false;
+    }
+    osg::Vec3                                     up = {0.0, 0.0, 1.0};
+    osg::Vec3 dir = end_ - begin_;
+    if (dir * up < 0) return false;
+    osg::ref_ptr<osgUtil::LineSegmentIntersector> _lineSegmentIntersector =
+        new osgUtil::LineSegmentIntersector(begin_, end_);
+    osgUtil::IntersectionVisitor _iv(_lineSegmentIntersector.get());
+    _airspaceNode->accept(_iv);
+    osgUtil::LineSegmentIntersector::Intersections _intersections =
+        _lineSegmentIntersector->getIntersections();
+    int _intersectionNumber = _intersections.size();
+    return _intersectionNumber==1;
+}
 
 static void OSG2Mesh(osg::Geometry* geometry_, MyMesh& mesh_)
 {
@@ -236,12 +255,16 @@ osg::ref_ptr<osg::Geode> PossionDisk()
                                                                    _diskSamplePoints.vert[i].P()[2]},
             1.0f);
         osg::ref_ptr<osg::ShapeDrawable> shapeDrawable = new osg::ShapeDrawable(sphere);
+        shapeDrawable->build();
 
         // 设置球体的颜色
-        osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
-        colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));   // 红色
-        shapeDrawable->setColorArray(colors);
-        shapeDrawable->setColorBinding(osg::Geometry::BIND_OVERALL);
+        //osg::ref_ptr<osg::Vec4Array> colors = new osg::Vec4Array;
+        //for (size_t i = 0; i < 100; i++) {
+        //    colors->push_back(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));   // 红色
+        //}
+        //shapeDrawable->setColorArray(colors);
+        //shapeDrawable->setColorBinding(osg::Geometry::BIND_OVERALL);
+        shapeDrawable->setColor(osg::Vec4(1.0f, 0.0f, 0.0f, 1.0f));
         geode->addDrawable(shapeDrawable);
     }
 
@@ -326,6 +349,7 @@ osg::ref_ptr<osg::Geode> GenerateAirspace()
     osg::ref_ptr<osg::Geode> geode = new osg::Geode;
     geode->addDrawable(geometry);
     MakeTransparent(geode, 0.5);
+    _airspaceNode = geode;
     return geode;
 }
 std::vector<osg::Vec3> GetDiskPoints()
