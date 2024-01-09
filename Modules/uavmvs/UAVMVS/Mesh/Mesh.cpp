@@ -99,17 +99,42 @@ bool isIntersectionAirspace(osg::Vec3 begin_, osg::Vec3 end_)
     if (!_airspaceNode) {
         return false;
     }
-    osg::Vec3                                     up = {0.0, 0.0, 1.0};
-    osg::Vec3 dir = end_ - begin_;
-    if (dir * up < 0) return false;
-    osg::ref_ptr<osgUtil::LineSegmentIntersector> _lineSegmentIntersector =
-        new osgUtil::LineSegmentIntersector(begin_, end_);
-    osgUtil::IntersectionVisitor _iv(_lineSegmentIntersector.get());
-    _airspaceNode->accept(_iv);
-    osgUtil::LineSegmentIntersector::Intersections _intersections =
-        _lineSegmentIntersector->getIntersections();
-    int _intersectionNumber = _intersections.size();
-    return _intersectionNumber==1;
+    {
+        osg::Vec3 up  = {0.0, 0.0, 1.0};
+        osg::Vec3 dir = end_ - begin_;
+        if (dir * up < 0) return false;
+        osg::ref_ptr<osgUtil::LineSegmentIntersector> _lineSegmentIntersector =
+            new osgUtil::LineSegmentIntersector(begin_, end_);
+        osgUtil::IntersectionVisitor _iv(_lineSegmentIntersector.get());
+        _airspaceNode->accept(_iv);
+        osgUtil::LineSegmentIntersector::Intersections _intersections =
+            _lineSegmentIntersector->getIntersections();
+        int _intersectionNumber = _intersections.size();
+        if (_intersectionNumber == 1) {
+
+            return true;
+        }
+    }
+
+
+    {
+        osg::Vec3 up  = {0.0, 0.0, 1.0};
+        osg::Vec3                                     end = begin_ - up * ::uavmvs::context::GetSettings()->getDistance();
+        osg::ref_ptr<osgUtil::LineSegmentIntersector> _lineSegmentIntersector =
+            new osgUtil::LineSegmentIntersector(begin_, end);
+        osgUtil::IntersectionVisitor _iv(_lineSegmentIntersector.get());
+        _airspaceNode->accept(_iv);
+        osgUtil::LineSegmentIntersector::Intersections _intersections =
+            _lineSegmentIntersector->getIntersections();
+        int _intersectionNumber = _intersections.size();
+        if (_intersectionNumber == 1) {
+
+            return true;
+        }
+    }
+
+    return false;
+
 }
 
 static void OSG2Mesh(osg::Geometry* geometry_, MyMesh& mesh_)
